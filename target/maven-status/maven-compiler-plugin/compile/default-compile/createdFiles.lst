@@ -1,0 +1,16 @@
+impl\utils\finals\Global.class
+impl\uri\api\Version.class
+impl\uri\api\v1\Register.class
+impl\graphs\GraphData.class
+impl\json\Config.class
+impl\utils\Database.class
+Main.class
+impl\HttpService.class
+impl\uri\admin\AdminConsole.class
+impl\utils\Utils.class
+impl\utils\finals\Colors.class
+impl\uri\user\Home.class
+impl\utils\Console.class
+impl\uri\api\v1\Login.class
+impl\utils\Hardware.class
+impl\WebsocketService.class

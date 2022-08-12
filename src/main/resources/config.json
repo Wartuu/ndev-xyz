@@ -1,0 +1,17 @@
+{
+  "Version": "0.1",
+
+  "http-port": 7001,
+
+  "http-executor-thread-pool-overrun-size": 250,
+  "http-executor-thread-pool-core-size": 8,
+  "http-executor-thread-pool-max-idle-time": 30,
+  "http-executor-thread-pool-max-thread-work-queue": 2000,
+
+  "ws-port": 7002,
+
+  "db-url": "jdbc:postgresql://localhost:7005/nekodev",
+  "db-username": "postgres",
+  "db-password": "chi210"
+
+}
