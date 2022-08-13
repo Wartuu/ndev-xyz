@@ -3,14 +3,19 @@ package impl;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import impl.handler.api.v1.ServerRuntime;
+import impl.handler.api.v1.UserLookup;
+import impl.handler.api.v1.Version;
 import impl.handler.user.Chat;
-import impl.json.Config;
+import impl.json.ConfigJson;
 import impl.handler.admin.AdminConsole;
 import impl.handler.user.Home;
+import impl.json.VersionJson;
 import impl.utils.Database;
 import impl.utils.Utils;
 import impl.utils.executor.ExecutorRejectionHandler;
 import impl.utils.executor.ExecutorThreadFactory;
+import impl.utils.finals.Global;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -27,17 +33,18 @@ import java.util.concurrent.TimeUnit;
 public class HttpService {
 
     private static ThreadPoolExecutor threadPoolExecutor;
-    private static Config cfg;
-    private static boolean isRunning = false;
+    private static ConfigJson config;
+    public static boolean isRunning = false;
 
     public static HttpServer httpServer;
-    public static Database database;
+
+    private static Instant httpServiceStartTime;
 
     private static final Logger logger = LoggerFactory.getLogger(HttpService.class);
 
 
-    public HttpService(Config config) {
-        cfg = config;
+    public HttpService(ConfigJson cfg) {
+        config = cfg;
     }
 
     public void stop() {
@@ -52,18 +59,30 @@ public class HttpService {
 
     public void start() {
         try{
-            logger.info("Connecting to database: " + cfg.getDatabaseUrl());
-            database.connect();
+            Global.database = new Database(config);
+            Global.database.connect();
 
             logger.info("creating context");
-            httpServer = HttpServer.create(new InetSocketAddress(cfg.getHttpPort()), 0);
+            httpServer = HttpServer.create(new InetSocketAddress(config.getHttpPort()), 0);
 
             // user
             httpServer.createContext("/", new Home());
             httpServer.createContext("/chat", new Chat());
 
+            //api
+
+            VersionJson versionJson = new VersionJson();
+            versionJson.setFrontendVersion(config.getFrontendVersion());
+            versionJson.setBackendVersion(config.getBackendVersion());
+            versionJson.setMainVersion(config.getMainVersion());
+
+            httpServer.createContext("/api/v1/version", new Version(versionJson));
+            httpServer.createContext("/api/v1/runtime", new ServerRuntime());
+            httpServer.createContext("/api/v1/userLookup", new UserLookup());
+
+
             // admin
-            httpServer.createContext("/console", new AdminConsole());
+            httpServer.createContext("/admin/console", new AdminConsole());
 
             //static
             ArrayList<String> staticFiles = new ArrayList<>();
@@ -86,14 +105,13 @@ public class HttpService {
                 String ext = file.substring(file.lastIndexOf('.'));
                 ext = ext.substring(1);
                 String path = "/static/"+ext+"/"+file;
-                logger.debug(Utils.getResource(file));
                 httpServer.createContext(path, new HttpHandler() {
                     @Override
                     public void handle(HttpExchange exchange) throws IOException {
                         Utils.sendOutput(exchange, Utils.getResource("static/" + file), false, 200);
                     }
                 });
-                logger.info("created context for /static/" + file + " in context -> " + path);
+                logger.info("created HttpHandler for /static/" + file + " in path -> " + path);
             }
 
             int executorCoreThreads;
@@ -101,24 +119,27 @@ public class HttpService {
             int executorMaxIdleTime;
             int executorMaxThreadQueue;
 
-            if(cfg.getExecutorCoreSize() == -1)
+            if(config.getExecutorCoreSize() == -1) {
                 executorCoreThreads = Runtime.getRuntime().availableProcessors();
-            else executorCoreThreads = cfg.getExecutorCoreSize();
+            } else {executorCoreThreads = config.getExecutorCoreSize();}
 
-            if (cfg.getExecutorOverrunSize() == -1)
-                executorOverrunThreads = Integer.MAX_VALUE;
-            else executorOverrunThreads = cfg.getExecutorOverrunSize();
+            if (config.getExecutorOverrunSize() == -1){
+                executorOverrunThreads = Integer.MAX_VALUE - executorCoreThreads;
+            } else {executorOverrunThreads = config.getExecutorOverrunSize();}
 
-            executorMaxIdleTime = cfg.getExecutorMaxIdleTime();
+            logger.info(String.valueOf( "core-executor-threads: " + executorCoreThreads));
+            logger.info(String.valueOf("overrun-executor-threads: " + executorOverrunThreads));
 
-            if(cfg.getExecutorMaxWorkQueue() == -1)
+            executorMaxIdleTime = config.getExecutorMaxIdleTime();
+
+            if(config.getExecutorMaxWorkQueue() == -1)
                 executorMaxThreadQueue = Integer.MAX_VALUE;
-            else executorMaxThreadQueue = cfg.getExecutorMaxWorkQueue();
+            else executorMaxThreadQueue = config.getExecutorMaxWorkQueue();
 
 
 
             threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(executorCoreThreads);
-            threadPoolExecutor.setThreadFactory(new ExecutorThreadFactory());
+            threadPoolExecutor.setThreadFactory(new ExecutorThreadFactory(config));
             threadPoolExecutor.setCorePoolSize(executorCoreThreads);
             threadPoolExecutor.setMaximumPoolSize(executorOverrunThreads + executorCoreThreads);
             threadPoolExecutor.setKeepAliveTime(executorMaxIdleTime, TimeUnit.SECONDS);
@@ -126,9 +147,9 @@ public class HttpService {
 
             httpServer.setExecutor(threadPoolExecutor);
 
-
             httpServer.start();
-            logger.info("Running at http://127.0.0.1:" + cfg.getHttpPort() + "/");
+            logger.info("Running at http://127.0.0.1:" + config.getHttpPort() + "/");
+            logger.info("StartTime set to " +  Global.startTime.toEpochMilli());
 
         }catch (IOException e) {e.printStackTrace();}
 

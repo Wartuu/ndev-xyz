@@ -6,25 +6,21 @@ import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import impl.json.Config;
+import impl.json.ConfigJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 public class Utils {
     private static Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static String getFromPost(HttpExchange exchange)
     {
-        logger.debug("loading post data");
         String out;
         String in = "";
         InputStreamReader inputStreamReader = new InputStreamReader(exchange.getRequestBody());
@@ -35,8 +31,6 @@ public class Utils {
         } catch (Exception exception) {
             logger.warn(exception.toString());
         }
-
-        logger.debug("post data size: " + in.getBytes().length);
         return in;
     }
 
@@ -91,7 +85,7 @@ public class Utils {
     }
 
 
-    public static Config getConfig(String configName) {
+    public static ConfigJson getConfig(String configName) {
         try {
             ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
             InputStream configFileStream = classLoader.getResourceAsStream(configName);
@@ -105,13 +99,13 @@ public class Utils {
             }
 
             Gson gson = new Gson();
-            Config config = gson.fromJson(String.valueOf(rawConfig), Config.class);
+            ConfigJson configGson = gson.fromJson(String.valueOf(rawConfig), ConfigJson.class);
 
             configFileSR.close();
             configFileStream.close();
             reader.close();
 
-            return config;
+            return configGson;
 
         } catch (IOException exception) {
             logger.error("no config file or contains error " + exception.toString());
@@ -139,16 +133,6 @@ public class Utils {
         JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
         return jsonObject.get(searchedVar).getAsString();
     }
-
-    public static void createResourceHandler(HttpExchange exchange, String path, boolean isLarge) {
-        exchange.getHttpContext().getServer().createContext(path, new HttpHandler() {
-            @Override
-            public void handle(HttpExchange exchange) throws IOException {
-                 Utils.sendOutput(exchange, Utils.getResource(path), isLarge, 200);
-            }
-        });
-    }
-
     public static void createResourceHandler(HttpServer server, String path, boolean isLarge) {
         server.createContext(path, new HttpHandler() {
             @Override

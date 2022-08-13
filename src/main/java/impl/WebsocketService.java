@@ -1,6 +1,6 @@
 package impl;
 
-import impl.json.Config;
+import impl.json.ConfigJson;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
@@ -13,11 +13,11 @@ import java.nio.ByteBuffer;
 public class WebsocketService extends WebSocketServer {
 
     private static final Logger logger = LoggerFactory.getLogger(WebsocketService.class);
-    private Config cfg;
+    private ConfigJson configGson;
 
-    public WebsocketService(Config config) {
-        super(new InetSocketAddress(config.getWebsocketPort()));
-        cfg = config;
+    public WebsocketService(ConfigJson cfg) {
+        super(new InetSocketAddress(cfg.getWebsocketPort()));
+        configGson = cfg;
 
     }
 
