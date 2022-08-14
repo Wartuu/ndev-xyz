@@ -10,9 +10,13 @@ import impl.json.ConfigJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -140,6 +144,28 @@ public class Utils {
                 Utils.sendOutput(exchange, Utils.getResource(path), isLarge, 200);
             }
         });
+    }
+
+    public static String sha256(String content) {
+        String out = null;
+        try {
+            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            final byte[] hash = digest.digest(content.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder(2*hash.length);
+
+            for(int i = 0; i < hash.length; i++) {
+                String hex = Integer.toHexString(0xff & hash[i]);
+                if(hex.length() == 1) {
+                    hexString.append('0');
+                }
+                hexString.append(hex);
+            }
+            out = hexString.toString();
+
+        } catch (NoSuchAlgorithmException e) {
+            logger.error(e.getMessage());
+        }
+        return out;
     }
 
 

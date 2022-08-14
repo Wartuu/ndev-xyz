@@ -46,7 +46,7 @@ public class Login implements HttpHandler {
                 outputJson.setSuccess(true);
                 Utils.sendOutput(exchange, Global.gson.toJson(outputJson), false, 200);
             } else {
-                logger.info(userAccount.getPassword() + " : " + accessJson.getPassword());
+                logger.info(userAccount.getPassword() + " : " + Utils.sha256(accessJson.getPassword()));
                 outputJson.setReason("wrong password/username or input contains illegal character");
                 outputJson.setSuccess(false);
                 Utils.sendOutput(exchange, Global.gson.toJson(outputJson), false, 200);

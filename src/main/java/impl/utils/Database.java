@@ -248,7 +248,6 @@ public class Database {
             String auth = random.ints(97,123).limit(32).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
             String session = random.ints(97,123).limit(128).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
 
-
             ResultSet usernameExistsRs = statement.executeQuery("select * from account where UPPER(username) = UPPER('" + username + "')");
 
             if(usernameExistsRs.next()) {

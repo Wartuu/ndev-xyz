@@ -13,7 +13,7 @@ public class Register implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         if(exchange.getRequestMethod().equalsIgnoreCase("post")) {
             AccountAccessJson accessJson = Global.gson.fromJson(Utils.getFromPost(exchange), AccountAccessJson.class);
-            Utils.sendOutput(exchange, Global.gson.toJson(Global.database.createNewAccount(exchange, accessJson.getUsername(), accessJson.getPassword(), 1)), false, 200);
+            Utils.sendOutput(exchange, Global.gson.toJson(Global.database.createNewAccount(exchange, accessJson.getUsername(), Utils.sha256(accessJson.getPassword()), 1)), false, 200);
         }
 
 
