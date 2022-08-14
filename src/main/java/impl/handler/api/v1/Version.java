@@ -18,7 +18,7 @@ public class Version implements HttpHandler {
     private static String version;
 
     public Version(VersionJson versionGson) {
-        version = Global.gson.toJson(version, VersionJson.class);
+        version = Global.gson.toJson(versionGson, VersionJson.class);
     }
 
     @Override

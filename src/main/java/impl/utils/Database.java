@@ -161,7 +161,6 @@ public class Database {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from account where session_token='" + session + "'");
 
-
             while (resultSet.next()) {
                 Account account = new Account();
                 account.setId(resultSet.getLong("id"));
