@@ -25,8 +25,7 @@ public class UserLookup implements HttpHandler {
             account = Global.database.getAccountById(id);
         }
 
-        Gson gson = new Gson();
-        Utils.sendOutput(exchange,gson.toJson(account), false, 200);
+        Utils.sendOutput(exchange,Global.gson.toJson(account), false, 200);
 
 
     }

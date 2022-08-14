@@ -3,9 +3,7 @@ package impl;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
-import impl.handler.api.v1.ServerRuntime;
-import impl.handler.api.v1.UserLookup;
-import impl.handler.api.v1.Version;
+import impl.handler.api.v1.*;
 import impl.handler.user.Chat;
 import impl.json.ConfigJson;
 import impl.handler.admin.AdminConsole;
@@ -79,6 +77,10 @@ public class HttpService {
             httpServer.createContext("/api/v1/version", new Version(versionJson));
             httpServer.createContext("/api/v1/runtime", new ServerRuntime());
             httpServer.createContext("/api/v1/userLookup", new UserLookup());
+            httpServer.createContext("/api/v1/register", new Register());
+            httpServer.createContext("/api/v1/login", new Login());
+            httpServer.createContext("/api/v1/logout", new Logout());
+
 
 
             // admin
@@ -93,7 +95,7 @@ public class HttpService {
                 logger.info("looping trough resource:/static/ - make sure no any folder in static exists");
                 String resFile;
                 while((resFile = bufferedReader.readLine()) != null) {
-                    logger.info(resFile);
+                    logger.info("added static content -> " + resFile);
                     staticFiles.add(resFile);
                 }
                 inputStream.close();

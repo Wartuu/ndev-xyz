@@ -2,6 +2,8 @@ package impl.utils;
 
 import impl.json.ConfigJson;
 import impl.utils.finals.Global;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -17,6 +19,8 @@ public class HtmlParser {
     private static final String configBackendVersion = "@config.version.backend";
     private static final String httpTotalRuntime = "@main.runtime";
 
+    private static Logger logger = LoggerFactory.getLogger(HtmlParser.class);
+
     public static String parse(String html) {
         ConfigJson config = Utils.getConfig(Global.configName);
 
@@ -26,8 +30,6 @@ public class HtmlParser {
         html = html.replaceAll(configMainVersion, config.getMainVersion());
         html = html.replaceAll(configBackendVersion, config.getBackendVersion());
         html = html.replaceAll(configFrontendVersion, config.getFrontendVersion());
-
-
         long time = Duration.between(Global.startTime, Instant.now()).toMillis();
 
         long HH = TimeUnit.MILLISECONDS.toHours(time);

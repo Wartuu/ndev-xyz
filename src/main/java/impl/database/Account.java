@@ -1,17 +1,40 @@
 package impl.database;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.sql.Date;
 
 
 public class Account {
+
+    @SerializedName("account-id")
     private long id;
+
+    @SerializedName("username")
     private String username;
+
+    @SerializedName("password")
     private String password;
+
+    @SerializedName("account-creation-date")
     private Date accountCreated;
+
+    @SerializedName("last-ip")
     private String lastIp;
+
+    @SerializedName("last-login")
     private Date lastLogin;
+
+    @SerializedName("account-type")
     private int accountType;
+    @SerializedName("chat-access")
     private boolean chatAccess;
+
+    @SerializedName("authorization-token")
+    private String authToken;
+
+    @SerializedName("session-token")
+    private String session;
 
     public long getId() {
         return id;
@@ -75,5 +98,21 @@ public class Account {
 
     public void setChatAccess(boolean chatAccess) {
         this.chatAccess = chatAccess;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
+    public String getSession() {
+        return session;
+    }
+
+    public void setSession(String session) {
+        this.session = session;
     }
 }

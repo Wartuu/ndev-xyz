@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import impl.json.VersionJson;
 import impl.utils.Utils;
+import impl.utils.finals.Global;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +18,7 @@ public class Version implements HttpHandler {
     private static String version;
 
     public Version(VersionJson versionGson) {
-        Gson gson = new Gson();
-        version = gson.toJson(versionGson);
-
-
+        version = Global.gson.toJson(version, VersionJson.class);
     }
 
     @Override
