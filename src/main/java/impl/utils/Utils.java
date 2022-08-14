@@ -15,6 +15,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collections;
@@ -146,27 +147,53 @@ public class Utils {
         });
     }
 
-    public static String sha256(String content) {
+    public static String sha256(String content, byte[] salt) {
         String out = null;
         try {
             final MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            final byte[] hash = digest.digest(content.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder(2*hash.length);
+            digest.update(salt);
 
-            for(int i = 0; i < hash.length; i++) {
-                String hex = Integer.toHexString(0xff & hash[i]);
-                if(hex.length() == 1) {
-                    hexString.append('0');
-                }
-                hexString.append(hex);
-            }
-            out = hexString.toString();
+            final byte[] hash = digest.digest(content.getBytes(StandardCharsets.UTF_8));
+
+            out = byteToHex(hash);
 
         } catch (NoSuchAlgorithmException e) {
             logger.error(e.getMessage());
         }
         return out;
     }
+
+    public static byte[] generateSalt() {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        return salt;
+    }
+
+    public static String byteToHex(byte[] bytes) {
+        StringBuilder hexString = new StringBuilder(2*bytes.length);
+
+        for(int i = 0; i < bytes.length; i++) {
+            String hex = Integer.toHexString(0xff & bytes[i]);
+            if(hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+
+        return hexString.toString();
+    }
+    public static byte[] hexToByte(String str) {
+        byte[] val = new byte[str.length() / 2];
+
+        for(int i = 0; i < val.length; i++) {
+            int index = i * 2;
+            int convert = Integer.parseInt(str.substring(index, index + 2), 16);
+            val[i] = (byte) convert;
+        }
+        return val;
+    }
+
 
 
 }

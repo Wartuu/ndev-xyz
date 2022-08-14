@@ -35,7 +35,12 @@ public class Login implements HttpHandler {
                 return;
             }
 
-            if(userAccount.getPassword().equals(accessJson.getPassword())) {
+            String salt = userAccount.getPassword().split(":")[0];
+            String hash = userAccount.getPassword().split(":")[1];
+
+            String inputHash = Utils.sha256(accessJson.getPassword(), Utils.hexToByte(salt));
+
+            if(hash.equals(inputHash)) {
                 logger.info("logged in");
 
                 if(userAccount.getSession() == null) {
@@ -46,7 +51,7 @@ public class Login implements HttpHandler {
                 outputJson.setSuccess(true);
                 Utils.sendOutput(exchange, Global.gson.toJson(outputJson), false, 200);
             } else {
-                logger.info(userAccount.getPassword() + " : " + Utils.sha256(accessJson.getPassword()));
+
                 outputJson.setReason("wrong password/username or input contains illegal character");
                 outputJson.setSuccess(false);
                 Utils.sendOutput(exchange, Global.gson.toJson(outputJson), false, 200);

@@ -264,6 +264,13 @@ public class Database {
             }
 
 
+            byte[] salt = Utils.generateSalt();
+            password = Utils.sha256(password, salt);
+            password = Utils.byteToHex(salt) + ":" + password;
+
+            logger.info(String.valueOf(password.length()));
+            logger.info(password);
+
             statement.executeUpdate(
                     "insert into account " +
                             "(username, password, account_created, last_ip, last_login, account_type, chat_access, auth_token, session_token)" +
