@@ -23,6 +23,14 @@ public class Logout implements HttpHandler {
         LogoutJson logoutJson = new LogoutJson();
 
 
+        if(cookies == null) {
+            logoutJson.setReason("no existing session-token");
+            logoutJson.setSuccess(false);
+            Utils.sendOutput(exchange, Global.gson.toJson(logoutJson), false, 200);
+            return;
+        }
+
+
         for (String cookie : cookies) {
             if(cookie.contains("session-token")) {
                 session = cookie.split("=")[1];
@@ -37,12 +45,15 @@ public class Logout implements HttpHandler {
         }
 
         Account account = Global.database.getAccountBySession(session);
-        Global.database.deleteSession(account);
 
+        Global.database.deleteSession(account);
         if(account.getSession() == null) {
             logoutJson.setSuccess(true);
-            Utils.sendOutput(exchange, Global.gson.toJson(logoutJson), false, 200);
-            return;
+        } else {
+            logoutJson.setReason("valid session-token");
+            logoutJson.setSuccess(false);
         }
+        Utils.sendOutput(exchange, Global.gson.toJson(logoutJson), false, 200);
+        return;
     }
 }

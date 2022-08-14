@@ -76,7 +76,7 @@ public class HttpService {
 
             httpServer.createContext("/api/v1/version", new Version(versionJson));
             httpServer.createContext("/api/v1/runtime", new ServerRuntime());
-            httpServer.createContext("/api/v1/userLookup", new UserLookup());
+            httpServer.createContext("/api/v1/lookup", new UserLookup());
             httpServer.createContext("/api/v1/register", new Register());
             httpServer.createContext("/api/v1/login", new Login());
             httpServer.createContext("/api/v1/logout", new Logout());
