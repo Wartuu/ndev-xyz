@@ -22,13 +22,6 @@
             <version>2.9.1</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/com.graphql-java/graphql-java -->
-        <dependency>
-            <groupId>com.graphql-java</groupId>
-            <artifactId>graphql-java</artifactId>
-            <version>19.0</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.java-websocket/Java-WebSocket -->
         <dependency>
             <groupId>org.java-websocket</groupId>

@@ -1,24 +1,11 @@
 package impl.utils;
 import com.sun.net.httpserver.HttpExchange;
-import graphql.ExecutionResult;
-import graphql.GraphQL;
-import graphql.schema.GraphQLSchema;
-import graphql.schema.StaticDataFetcher;
-import graphql.schema.idl.RuntimeWiring;
-import graphql.schema.idl.SchemaGenerator;
-import graphql.schema.idl.SchemaParser;
-import graphql.schema.idl.TypeDefinitionRegistry;
 import impl.database.Account;
-import impl.handler.api.v1.Register;
 import impl.json.ConfigJson;
-import impl.json.LoginJson;
 import impl.json.RegisterJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.plaf.nimbus.State;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.Properties;
 import java.util.Random;
@@ -30,8 +17,6 @@ public class Database {
 
     private static Properties connectionProperties = new Properties();
     private Connection connection;
-    private static SchemaParser schemaParser = new SchemaParser();
-    private static SchemaGenerator schemaGenerator = new SchemaGenerator();
 
     private static final String[] illegalUsernameSimbols = {"=", "'", "\"", "\\", "/", ",", "\0", "\b", "\n", "\r", "\t", "%", "$", "*"};
 
@@ -92,6 +77,16 @@ public class Database {
         }
 
         return output.toString();
+    }
+
+    public void update(String query) {
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            statement.executeUpdate(query);
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+        }
     }
 
     public Account getAccountById(long id) {
@@ -161,8 +156,9 @@ public class Database {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from account where session_token='" + session + "'");
 
+            Account account = null;
             while (resultSet.next()) {
-                Account account = new Account();
+                account = new Account();
                 account.setId(resultSet.getLong("id"));
                 account.setUsername(resultSet.getString("username"));
                 account.setPassword(resultSet.getString("password"));
@@ -238,8 +234,6 @@ public class Database {
                 return registerJson;
             }
             if(containsIllegalCharacter(username)) {registerJson.setSuccess(false); registerJson.setReason("illegal character in username"); return registerJson;}
-            if(containsIllegalCharacter(password)) {registerJson.setSuccess(false); registerJson.setReason("illegal character in password"); return registerJson;}
-
 
             Statement statement = connection.createStatement();
 
