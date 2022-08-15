@@ -17,9 +17,6 @@ public class ConfigJson {
     @SerializedName("http-executor-thread-pool-max-idle-time")
     private int executorMaxIdleTime;
 
-    @SerializedName("http-executor-thread-pool-max-thread-work-queue")
-    private int executorMaxWorkQueue;
-
     @SerializedName("db-url")
     private String databaseUrl;
 
@@ -62,10 +59,6 @@ public class ConfigJson {
 
     public int getExecutorMaxIdleTime() {
         return executorMaxIdleTime;
-    }
-
-    public int getExecutorMaxWorkQueue() {
-        return executorMaxWorkQueue;
     }
 
     public String getDatabaseUrl() {

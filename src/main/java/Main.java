@@ -6,9 +6,6 @@ import impl.utils.finals.Global;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
-import java.util.Scanner;
-
 public class Main {
     protected static final Logger logger = LoggerFactory.getLogger(Main.class);
 
@@ -26,24 +23,6 @@ public class Main {
         Thread websocketServiceThread = new Thread(()->{new WebsocketService(configGson).start();});
         websocketServiceThread.setName("websocket-service-01");
         websocketServiceThread.start();
-
-        Scanner scanner = new Scanner(System.in);
-        while (true) {
-            String input = scanner.nextLine();
-            if(input.equalsIgnoreCase("exit") || input.equalsIgnoreCase("/q") || input.equalsIgnoreCase("\\q")) {
-                logger.info("Stopping http service");
-
-                logger.info("Stopping websocket service");
-                websocketServiceThread.stop();
-
-                logger.info("Application exits...");
-                System.exit(0);
-            };
-        }
-
-
-
-
 
     }
 }

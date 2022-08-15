@@ -10,7 +10,6 @@
   "http-executor-thread-pool-overrun-size": -1,
   "http-executor-thread-pool-core-size": -1,
   "http-executor-thread-pool-max-idle-time": 30,
-  "http-executor-thread-pool-max-thread-work-queue": 2000,
 
   "db-url": "jdbc:postgresql://localhost:7005/nekodev",
   "db-username": "postgres",

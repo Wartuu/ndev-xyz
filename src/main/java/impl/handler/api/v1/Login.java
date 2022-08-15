@@ -5,7 +5,6 @@ import com.sun.net.httpserver.HttpHandler;
 import impl.database.Account;
 import impl.json.AccountAccessJson;
 import impl.json.LoginJson;
-import impl.utils.Database;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.slf4j.Logger;
@@ -18,16 +17,13 @@ public class Login implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         if(exchange.getRequestMethod().equalsIgnoreCase("post")) {
-            logger.info("logging in");
 
             AccountAccessJson accessJson = Global.gson.fromJson(Utils.getFromPost(exchange), AccountAccessJson.class);
             LoginJson outputJson = new LoginJson();
 
-            Account userAccount = Global.database.getAccountByUsername(accessJson.getUsername());
 
 
-
-            if(userAccount == null || Global.database.containsIllegalCharacter(accessJson.getPassword())) {
+            if(Global.database.containsIllegalCharacter(accessJson.getUsername())) {
                 logger.info("illegal character or user does not exist");
                 outputJson.setReason("input contains illegal character");
                 outputJson.setSuccess(false);
@@ -35,13 +31,22 @@ public class Login implements HttpHandler {
                 return;
             }
 
+            Account userAccount = Global.database.getAccountByUsername(accessJson.getUsername());
+
             String salt = userAccount.getPassword().split(":")[0];
             String hash = userAccount.getPassword().split(":")[1];
 
             String inputHash = Utils.sha256(accessJson.getPassword(), Utils.hexToByte(salt));
 
             if(hash.equals(inputHash)) {
-                logger.info("logged in");
+                logger.info(userAccount.getUsername() + " logged at ip: " + exchange.getRemoteAddress().getAddress().getHostAddress());
+                Global.database.update("update account " +
+                                                "set last_login = now() " +
+                                                "where id=" + userAccount.getId() );
+                Global.database.update("update account " +
+                        "set last_ip = '" + exchange.getRemoteAddress().getAddress().getHostAddress() + "' " +
+                        "where id=" + userAccount.getId() );
+
 
                 if(userAccount.getSession() == null) {
                     userAccount = Global.database.generateNewSession(userAccount);

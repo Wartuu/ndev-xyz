@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 public class Logout implements HttpHandler {
 
@@ -22,6 +23,7 @@ public class Logout implements HttpHandler {
         String session = null;
         LogoutJson logoutJson = new LogoutJson();
 
+        exchange.getResponseHeaders().add("Content-Type", "application/json");
 
         if(cookies == null) {
             logoutJson.setReason("no existing session-token");
@@ -29,7 +31,6 @@ public class Logout implements HttpHandler {
             Utils.sendOutput(exchange, Global.gson.toJson(logoutJson), false, 200);
             return;
         }
-
 
         for (String cookie : cookies) {
             if(cookie.contains("session-token")) {
@@ -46,12 +47,18 @@ public class Logout implements HttpHandler {
 
         Account account = Global.database.getAccountBySession(session);
 
-        Global.database.deleteSession(account);
-        if(account.getSession() == null) {
-            logoutJson.setSuccess(true);
-        } else {
+        if(account == null) {
             logoutJson.setReason("valid session-token");
             logoutJson.setSuccess(false);
+            Utils.sendOutput(exchange, Global.gson.toJson(logoutJson), false, 200);
+            return;
+        }
+
+        account = Global.database.deleteSession(account);
+
+        logger.info("6");
+        if(account.getSession() == null) {
+            logoutJson.setSuccess(true);
         }
         Utils.sendOutput(exchange, Global.gson.toJson(logoutJson), false, 200);
         return;

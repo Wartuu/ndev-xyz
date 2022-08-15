@@ -10,6 +10,7 @@ import impl.handler.admin.AdminConsole;
 import impl.handler.user.Home;
 import impl.json.VersionJson;
 import impl.utils.Database;
+import impl.utils.HtmlParser;
 import impl.utils.Utils;
 import impl.utils.executor.ExecutorRejectionHandler;
 import impl.utils.executor.ExecutorThreadFactory;
@@ -110,7 +111,7 @@ public class HttpService {
                 httpServer.createContext(path, new HttpHandler() {
                     @Override
                     public void handle(HttpExchange exchange) throws IOException {
-                        Utils.sendOutput(exchange, Utils.getResource("static/" + file), false, 200);
+                        Utils.sendOutput(exchange, HtmlParser.parse(Utils.getResource("static/" + file)), false, 200);
                     }
                 });
                 logger.info("created HttpHandler for /static/" + file + " in path -> " + path);
@@ -134,10 +135,6 @@ public class HttpService {
 
             executorMaxIdleTime = config.getExecutorMaxIdleTime();
 
-            if(config.getExecutorMaxWorkQueue() == -1)
-                executorMaxThreadQueue = Integer.MAX_VALUE;
-            else executorMaxThreadQueue = config.getExecutorMaxWorkQueue();
-
 
 
             threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(executorCoreThreads);
@@ -151,7 +148,7 @@ public class HttpService {
 
             httpServer.start();
             logger.info("Running at http://127.0.0.1:" + config.getHttpPort() + "/");
-            logger.info("StartTime set to " +  Global.startTime.toEpochMilli());
+            logger.info("StartTime set to " +  Global.startTime.toString());
 
         }catch (IOException e) {e.printStackTrace();}
 
