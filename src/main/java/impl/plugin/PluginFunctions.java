@@ -11,7 +11,6 @@ import impl.database.Account;
 import impl.json.ConfigJson;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
-import jdk.nashorn.internal.runtime.ScriptFunction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
