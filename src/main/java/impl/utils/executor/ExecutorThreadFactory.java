@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ThreadFactory;
 
-public class ExecutorThreadFactory implements ThreadFactory {
+public class  ExecutorThreadFactory implements ThreadFactory {
     private static final Logger logger = LoggerFactory.getLogger(ExecutorThreadFactory.class);
     private static ConfigJson config;
 

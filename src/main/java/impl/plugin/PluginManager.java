@@ -2,16 +2,21 @@ package impl.plugin;
 
 import impl.HttpService;
 import impl.WebsocketService;
+import impl.database.Database;
 import impl.utils.Utils;
+import impl.utils.finals.Global;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+
+
 
 public class PluginManager {
     public final Logger logger = LoggerFactory.getLogger(PluginManager.class);
@@ -19,6 +24,7 @@ public class PluginManager {
     private final List<Plugin> pluginList = new ArrayList<>();
     private ScriptEngine engine;
     private Invocable invEngine;
+
 
     public PluginManager(HttpService httpService, WebsocketService websocketService) {
         engine = new ScriptEngineManager().getEngineByName("JavaScript");
@@ -28,7 +34,9 @@ public class PluginManager {
             logger.info("no plugins detected");
         }
 
-        engine.put("Nekodev", new PluginFunctions(this, httpService, websocketService));
+        engine.put("plugin", new PluginFunctions(this, httpService, websocketService));
+        engine.put("database", Global.database);
+
 
         for(String pluginFile : Utils.getPlugins()) {
             String pluginScript = Utils.getResource("plugins/" + pluginFile);
@@ -48,7 +56,7 @@ public class PluginManager {
     private void loadPlugins() {
         for (FunctionHook hook : functionHooks) {
             try {
-                if(hook.getHookName().equals("@init")) {
+                if(hook.getHookName().equals("@load")) {
                     hook.getFunction().call();
                 }
             } catch (Exception e) {

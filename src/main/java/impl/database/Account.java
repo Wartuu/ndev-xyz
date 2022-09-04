@@ -92,7 +92,7 @@ public class Account {
         this.accountType = accountType;
     }
 
-    public boolean isChatAccess() {
+    public boolean getChatAccess() {
         return chatAccess;
     }
 

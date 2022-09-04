@@ -56,16 +56,16 @@ public class Database {
         logger.info("succeed connecting to database");
     }
 
-    public String execute(String command, String entryValue) {
+    public String execute(String query, String outputValue) {
         StringBuilder output = new StringBuilder();
         try {
             Statement statement = connection.createStatement();
 
-            ResultSet resultSet = statement.executeQuery(command);
+            ResultSet resultSet = statement.executeQuery(query);
 
 
             while (resultSet.next()) {
-                output.append(resultSet.getString(entryValue));
+                output.append(resultSet.getString(outputValue));
             }
 
             logger.info(output.toString());

@@ -8,7 +8,10 @@ import com.sun.net.httpserver.HttpServer;
 import impl.HttpService;
 import impl.WebsocketService;
 import impl.database.Account;
+import impl.database.Database;
 import impl.json.ConfigJson;
+import impl.utils.Hardware;
+import impl.utils.HtmlParser;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.slf4j.Logger;
@@ -39,11 +42,14 @@ public class PluginFunctions {
         pluginManager.createHook(hook, function);
     }
 
-    public void createUri(String path, String content, boolean isLarge) {
+    public void createUri(String path, String content, boolean isLarge, String customHook, String contentType) {
         httpService.httpServer.createContext(path, new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
+                pluginManager.triggerHook(customHook);
+                exchange.getResponseHeaders().set("Content-type", contentType);
                 Utils.sendOutput(exchange, content, isLarge, 200);
+
             }
         });
     }
@@ -60,27 +66,12 @@ public class PluginFunctions {
         return rawConfig;
     }
 
-    public String getAccountByName(String username) {
-        return Global.gson.toJson(Global.database.getAccountByUsername(username), Account.class);
+    public String getHardwareInfo(String value) {
+        return Hardware.getUsage(value);
     }
 
-    public String getAccountBySession(String session) {
-        return Global.gson.toJson(Global.database.getAccountByUsername(session), Account.class);
-    }
-
-    public String getAccountByAuthToken(String token) {
-        return Global.gson.toJson(Global.database.getAccountByAuthToken(token), Account.class);
-    }
-
-    public String getAccountById(long id) {
-        return Global.gson.toJson(Global.database.getAccountById(id), Account.class);
-    }
-
-    public byte[] generateSalt() {
-        return Utils.generateSalt();
-    }
-    public String hashWithSalt(String hashContent, byte[] salt) {
-        return Utils.sha256(hashContent, salt);
+    public String parseHtml(String html) {
+        return  HtmlParser.parse(html);
     }
 
 }
