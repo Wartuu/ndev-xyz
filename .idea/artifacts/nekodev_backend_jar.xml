@@ -2,15 +2,15 @@
   <artifact type="jar" name="nekodev-backend:jar">
     <output-path>$PROJECT_DIR$/out/artifacts/nekodev_backend_jar</output-path>
     <root id="archive" name="nekodev-backend.jar">
-      <element id="module-output" name="nekodev-backend" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" />
+      </element>
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/google/code/gson/gson/2.9.1/gson-2.9.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/java-websocket/Java-WebSocket/1.5.3/Java-WebSocket-1.5.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/postgresql-42.3.5.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar" path-in-jar="/" />
-      <element id="directory" name="META-INF">
-        <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/META-INF/MANIFEST.MF" />
-      </element>
+      <element id="module-output" name="main" />
     </root>
   </artifact>
 </component>

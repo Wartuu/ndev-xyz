@@ -1,6 +1,5 @@
 package impl.plugin;
 
-import jdk.nashorn.internal.runtime.ScriptFunction;
 
 import java.util.concurrent.Callable;
 

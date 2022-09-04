@@ -1,7 +1,8 @@
 Nekodev.createHook("@init", function(){
 
-    Nekodev.log("loaded testmod.js");
+    Nekodev.logger.info("loaded testmod.js");
 });
 
 Nekodev.createHook("@update", function() {
+    Nekodev.logger.info("test")
 });
