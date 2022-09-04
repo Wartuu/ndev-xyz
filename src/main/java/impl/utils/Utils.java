@@ -124,6 +124,32 @@ public class Utils {
         return null;
     }
 
+    public static String getConfigRaw(String configName) {
+        try {
+            ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+            InputStream configFileStream = classLoader.getResourceAsStream(configName);
+            InputStreamReader configFileSR = new InputStreamReader(configFileStream, StandardCharsets.UTF_8);
+            BufferedReader reader = new BufferedReader(configFileSR);
+
+            StringBuilder rawConfig = new StringBuilder();
+
+            for(String line; (line = reader.readLine()) != null;) {
+                rawConfig.append(line);
+            }
+
+            configFileSR.close();
+            configFileStream.close();
+            reader.close();
+
+            return rawConfig.toString();
+
+        } catch (IOException exception) {
+            logger.error("no config file or contains error " + exception.toString());
+        }
+
+        return null;
+    }
+
     public static String getUriContentByName(HttpExchange exchange, String UriName) {
         String[] query = exchange.getRequestURI().getQuery().split("&");
         List<String> queryfull = new ArrayList<String>(query.length*2);
@@ -294,10 +320,6 @@ public class Utils {
                 }
             });
         }
-    }
-
-    public static void callHook(String hookName) {
-
     }
 
 

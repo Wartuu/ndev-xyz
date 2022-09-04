@@ -303,9 +303,6 @@ public class Database {
 
     public Account deleteSession(Account account) {
         try {
-            Random random = new Random();
-            String session = random.ints(97,123).limit(128).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
-
             Statement statement = connection.createStatement();
 
             statement.executeUpdate(
