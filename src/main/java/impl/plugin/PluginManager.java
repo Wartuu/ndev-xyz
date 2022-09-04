@@ -1,6 +1,7 @@
 package impl.plugin;
 
 import impl.HttpService;
+import impl.WebsocketService;
 import impl.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ public class PluginManager {
     private ScriptEngine engine;
     private Invocable invEngine;
 
-    public PluginManager(HttpService httpService) {
+    public PluginManager(HttpService httpService, WebsocketService websocketService) {
         engine = new ScriptEngineManager().getEngineByName("JavaScript");
         invEngine = (Invocable) engine;
 
@@ -27,7 +28,7 @@ public class PluginManager {
             logger.info("no plugins detected");
         }
 
-        engine.put("Nekodev", new PluginFunctions(this, httpService));
+        engine.put("Nekodev", new PluginFunctions(this, httpService, websocketService));
 
         for(String pluginFile : Utils.getPlugins()) {
             String pluginScript = Utils.getResource("plugins/" + pluginFile);
@@ -88,5 +89,19 @@ public class PluginManager {
 
     public void createHook(String name, Callable function) {
         functionHooks.add(new FunctionHook(name, function));
+    }
+
+    public void triggerHook(String name) {
+        for (FunctionHook hook : functionHooks) {
+            if(hook.getHookName().equals(name)) {
+                try {
+                    hook.getFunction().call();
+                } catch (Exception e) {
+                    logger.error("---------->" + hook.getHookName() + "<----------");
+                    logger.error(e.getMessage());
+                    logger.error("----------> END OF " + hook.getHookName() + " ERROR LOG <----------");
+                }
+            }
+        }
     }
 }

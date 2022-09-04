@@ -80,18 +80,11 @@ public class HttpService {
             threadPoolExecutor = Utils.getThreadpoolExecutor();
             httpServer.setExecutor(threadPoolExecutor);
 
-            PluginManager pluginManager = new PluginManager(this);
-            Thread pluginManagerThread = new Thread(pluginManager::hookLoop);
-            pluginManagerThread.setPriority(Thread.MIN_PRIORITY);
-            pluginManagerThread.setName("Plugin-manager");
-            pluginManagerThread.start();
-
             httpServer.start();
             logger.info("Running at http://127.0.0.1:" + config.getHttpPort() + "/");
             logger.info("StartTime set to " +  Global.startTime.toString());
 
         }catch (IOException e) {e.printStackTrace();}
-
     }
 
 
