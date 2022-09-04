@@ -10,7 +10,12 @@ import java.io.IOException;
 public class Home implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String postBody = Utils.getFromPost(exchange);
-        Utils.sendOutput(exchange, HtmlParser.parse(postBody), false, 200);
+        if(exchange.getRequestURI().toString().equals("/")) {
+            Utils.sendOutput(exchange, HtmlParser.parse(Utils.getResource("html/home.html")), false, 200);
+        } else {
+            Utils.sendOutput(exchange, HtmlParser.parse(Utils.getResource("html/404.html")), false, 200);
+
+        }
+
     }
 }

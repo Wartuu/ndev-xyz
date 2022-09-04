@@ -1,8 +1,8 @@
-package impl.utils;
+package impl.database;
 import com.sun.net.httpserver.HttpExchange;
-import impl.database.Account;
 import impl.json.ConfigJson;
 import impl.json.RegisterJson;
+import impl.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

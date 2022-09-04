@@ -19,24 +19,10 @@ public class Logout implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        List<String> cookies = exchange.getRequestHeaders().get("Cookie");
-        String session = null;
         LogoutJson logoutJson = new LogoutJson();
 
+        String session = Utils.getCurrentSession(exchange);
         exchange.getResponseHeaders().add("Content-Type", "application/json");
-
-        if(cookies == null) {
-            logoutJson.setReason("no existing session-token");
-            logoutJson.setSuccess(false);
-            Utils.sendOutput(exchange, Global.gson.toJson(logoutJson), false, 200);
-            return;
-        }
-
-        for (String cookie : cookies) {
-            if(cookie.contains("session-token")) {
-                session = cookie.split("=")[1];
-            }
-        }
 
         if(session == null) {
             logoutJson.setReason("no existing session-token");

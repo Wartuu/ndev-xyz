@@ -7,8 +7,12 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import impl.json.ConfigJson;
+import impl.utils.executor.ExecutorRejectionHandler;
+import impl.utils.executor.ExecutorThreadFactory;
+import impl.utils.finals.Global;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.nio.ch.ThreadPool;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -18,6 +22,9 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 public class Utils {
     private static Logger logger = LoggerFactory.getLogger(Utils.class);
@@ -38,7 +45,7 @@ public class Utils {
     }
 
     public static boolean sendOutput(HttpExchange exchange, String output, boolean isLarge ,int rCode) {
-        logger.debug("Sending output with " + output.getBytes().length + " bytes! " + "isLarge: " + isLarge);
+        logger.debug("Sending output with " + output.getBytes().length + "b, isLarge: " + isLarge + ", uri: " + exchange.getRequestURI());
         try {
             if(isLarge) {
                 exchange.sendResponseHeaders(rCode, output.length());
@@ -192,6 +199,106 @@ public class Utils {
         return val;
     }
 
+    public static String getCurrentSession(HttpExchange exchange) {
+        List<String> cookies = exchange.getRequestHeaders().get("Cookie");
+        String session = null;
+
+        if(cookies == null) {return null;}
+
+        for (String cookie : cookies) {
+            if(cookie.contains("session-token")) {
+                session = cookie.split("=")[1];
+            }
+        }
+
+        return session;
+    }
+
+
+    public static ThreadPoolExecutor getThreadpoolExecutor() {
+        ThreadPoolExecutor threadPoolExecutor;
+        ConfigJson config = getConfig(Global.configName);
+
+        int executorCoreThreads;
+        int executorOverrunThreads;
+        int executorMaxIdleTime;
+
+        if(config.getExecutorCoreSize() == -1) {
+            executorCoreThreads = Runtime.getRuntime().availableProcessors();
+        } else {executorCoreThreads = config.getExecutorCoreSize();}
+
+        if (config.getExecutorOverrunSize() == -1){
+            executorOverrunThreads = Integer.MAX_VALUE - executorCoreThreads;
+        } else {executorOverrunThreads = config.getExecutorOverrunSize();}
+
+        logger.info("core-executor-threads: " + executorCoreThreads);
+        logger.info("overrun-executor-threads: " + executorOverrunThreads);
+        executorMaxIdleTime = config.getExecutorMaxIdleTime();
+
+
+
+        threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(executorCoreThreads);
+        threadPoolExecutor.setThreadFactory(new ExecutorThreadFactory(config));
+        threadPoolExecutor.setCorePoolSize(executorCoreThreads);
+        threadPoolExecutor.setMaximumPoolSize(executorOverrunThreads + executorCoreThreads);
+        threadPoolExecutor.setKeepAliveTime(executorMaxIdleTime, TimeUnit.SECONDS);
+        threadPoolExecutor.setRejectedExecutionHandler(new ExecutorRejectionHandler());
+
+        return threadPoolExecutor;
+    }
+
+    public static ArrayList<String> getStaticFiles() {
+        ArrayList<String> staticFiles = new ArrayList<>();
+        try {
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("static");
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String resFile;
+            while((resFile = bufferedReader.readLine()) != null) {
+                staticFiles.add(resFile);
+            }
+            inputStream.close();
+            bufferedReader.close();
+
+        } catch (Exception e) {logger.warn(e.toString()); return null;};
+
+        return staticFiles;
+    }
+
+    public static ArrayList<String> getPlugins() {
+        ArrayList<String> staticFiles = new ArrayList<>();
+        try {
+            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("plugins");
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String resFile;
+            while((resFile = bufferedReader.readLine()) != null) {
+                staticFiles.add(resFile);
+            }
+            inputStream.close();
+            bufferedReader.close();
+
+        } catch (Exception e) {logger.warn(e.toString()); return null;};
+
+        return staticFiles;
+    }
+
+    public static void loadStaticHandlers(HttpServer httpServer) {
+
+        for (String file : Utils.getStaticFiles()) {
+            String ext = file.substring(file.lastIndexOf('.'));
+            ext = ext.substring(1);
+            String path = "/static/"+ext+"/"+file;
+            httpServer.createContext(path, new HttpHandler() {
+                @Override
+                public void handle(HttpExchange exchange) throws IOException {
+                    Utils.sendOutput(exchange, HtmlParser.parse(Utils.getResource("static/" + file)), false, 200);
+                }
+            });
+        }
+    }
+
+    public static void callHook(String hookName) {
+
+    }
 
 
 }

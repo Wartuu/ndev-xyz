@@ -15,7 +15,6 @@ public class UserLookup implements HttpHandler {
     private Logger logger = LoggerFactory.getLogger(UserLookup.class);
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String type = Utils.getUriContentByName(exchange, "type");
         Account account = null;
         exchange.getResponseHeaders().add("Content-Type", "application/json");
         String user = Utils.getUriContentByName(exchange, "user");

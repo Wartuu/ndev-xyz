@@ -1,8 +1,7 @@
 package impl.utils.finals;
 
 import com.google.gson.Gson;
-import impl.utils.Database;
-import impl.utils.Utils;
+import impl.database.Database;
 
 import java.time.Instant;
 
