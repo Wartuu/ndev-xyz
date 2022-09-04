@@ -1,33 +1,21 @@
 package impl;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import impl.handler.api.v1.*;
-import impl.handler.user.Chat;
+import impl.handler.user.*;
 import impl.json.ConfigJson;
 import impl.handler.admin.AdminConsole;
-import impl.handler.user.Home;
 import impl.json.VersionJson;
-import impl.utils.Database;
-import impl.utils.HtmlParser;
+import impl.database.Database;
 import impl.utils.Utils;
-import impl.utils.executor.ExecutorRejectionHandler;
-import impl.utils.executor.ExecutorThreadFactory;
 import impl.utils.finals.Global;
+import impl.plugin.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.InetSocketAddress;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 public class HttpService {
 
@@ -35,9 +23,7 @@ public class HttpService {
     private static ConfigJson config;
     public static boolean isRunning = false;
 
-    public static HttpServer httpServer;
-
-    private static Instant httpServiceStartTime;
+    public HttpServer httpServer;
 
     private static final Logger logger = LoggerFactory.getLogger(HttpService.class);
 
@@ -67,6 +53,9 @@ public class HttpService {
             // user
             httpServer.createContext("/", new Home());
             httpServer.createContext("/chat", new Chat());
+            httpServer.createContext("/tos", new Tos());
+            httpServer.createContext("/login", new LoginPage());
+            httpServer.createContext("/register", new RegisterPage());
 
             //api
 
@@ -83,68 +72,19 @@ public class HttpService {
             httpServer.createContext("/api/v1/logout", new Logout());
 
 
-
             // admin
             httpServer.createContext("/admin/console", new AdminConsole());
 
-            //static
-            ArrayList<String> staticFiles = new ArrayList<>();
-            try {
-                InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("static");
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            Utils.loadStaticHandlers(httpServer);
 
-                logger.info("looping trough resource:/static/ - make sure no any folder in static exists");
-                String resFile;
-                while((resFile = bufferedReader.readLine()) != null) {
-                    logger.info("added static content -> " + resFile);
-                    staticFiles.add(resFile);
-                }
-                inputStream.close();
-                bufferedReader.close();
-
-            } catch (Exception e) {logger.warn(e.toString());};
-
-            for (String file : staticFiles) {
-                String ext = file.substring(file.lastIndexOf('.'));
-                ext = ext.substring(1);
-                String path = "/static/"+ext+"/"+file;
-                httpServer.createContext(path, new HttpHandler() {
-                    @Override
-                    public void handle(HttpExchange exchange) throws IOException {
-                        Utils.sendOutput(exchange, HtmlParser.parse(Utils.getResource("static/" + file)), false, 200);
-                    }
-                });
-                logger.info("created HttpHandler for /static/" + file + " in path -> " + path);
-            }
-
-            int executorCoreThreads;
-            int executorOverrunThreads;
-            int executorMaxIdleTime;
-            int executorMaxThreadQueue;
-
-            if(config.getExecutorCoreSize() == -1) {
-                executorCoreThreads = Runtime.getRuntime().availableProcessors();
-            } else {executorCoreThreads = config.getExecutorCoreSize();}
-
-            if (config.getExecutorOverrunSize() == -1){
-                executorOverrunThreads = Integer.MAX_VALUE - executorCoreThreads;
-            } else {executorOverrunThreads = config.getExecutorOverrunSize();}
-
-            logger.info(String.valueOf( "core-executor-threads: " + executorCoreThreads));
-            logger.info(String.valueOf("overrun-executor-threads: " + executorOverrunThreads));
-
-            executorMaxIdleTime = config.getExecutorMaxIdleTime();
-
-
-
-            threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(executorCoreThreads);
-            threadPoolExecutor.setThreadFactory(new ExecutorThreadFactory(config));
-            threadPoolExecutor.setCorePoolSize(executorCoreThreads);
-            threadPoolExecutor.setMaximumPoolSize(executorOverrunThreads + executorCoreThreads);
-            threadPoolExecutor.setKeepAliveTime(executorMaxIdleTime, TimeUnit.SECONDS);
-            threadPoolExecutor.setRejectedExecutionHandler(new ExecutorRejectionHandler());
-
+            threadPoolExecutor = Utils.getThreadpoolExecutor();
             httpServer.setExecutor(threadPoolExecutor);
+
+            PluginManager pluginManager = new PluginManager(this);
+            Thread pluginManagerThread = new Thread(pluginManager::hookLoop);
+            pluginManagerThread.setPriority(Thread.MIN_PRIORITY);
+            pluginManagerThread.setName("Plugin-manager");
+            pluginManagerThread.start();
 
             httpServer.start();
             logger.info("Running at http://127.0.0.1:" + config.getHttpPort() + "/");

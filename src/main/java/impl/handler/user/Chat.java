@@ -11,6 +11,6 @@ public class Chat implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        Utils.sendOutput(exchange, HtmlParser.parse("chat: @main.runtime"), false, 200);
+        Utils.sendOutput(exchange, HtmlParser.parse(Utils.getResource("html/chat.html")), false, 200);
     }
 }
