@@ -74,4 +74,12 @@ public class PluginFunctions {
         return  HtmlParser.parse(html);
     }
 
+    public void stopHttpServer() {
+        httpService.stop();
+    }
+
+    public void startHttpServer() {
+        httpService.httpServer.start();
+    }
+
 }

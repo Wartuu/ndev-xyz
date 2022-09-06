@@ -38,8 +38,6 @@ public class HttpService {
             httpServer = null;
             logger.info("http service stopped");
         }
-
-
     }
 
     public void start() {
@@ -84,7 +82,7 @@ public class HttpService {
             logger.info("Running at http://127.0.0.1:" + config.getHttpPort() + "/");
             logger.info("StartTime set to " +  Global.startTime.toString());
 
-        }catch (IOException e) {e.printStackTrace();}
+        } catch (IOException e) {e.printStackTrace();}
     }
 
 

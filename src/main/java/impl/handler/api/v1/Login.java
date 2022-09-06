@@ -36,7 +36,7 @@ public class Login implements HttpHandler {
             String salt = userAccount.getPassword().split(":")[0];
             String hash = userAccount.getPassword().split(":")[1];
 
-            String inputHash = Utils.sha256(accessJson.getPassword(), Utils.hexToByte(salt));
+            String inputHash = Utils.sha512(accessJson.getPassword(), Utils.hexToByte(salt));
 
             if(hash.equals(inputHash)) {
                 logger.info(userAccount.getUsername() + " logged at ip: " + exchange.getRemoteAddress().getAddress().getHostAddress());

@@ -177,10 +177,10 @@ public class Utils {
         });
     }
 
-    public static String sha256(String content, byte[] salt) {
+    public static String sha512(String content, byte[] salt) {
         String out = null;
         try {
-            final MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            final MessageDigest digest = MessageDigest.getInstance("SHA-512");
             digest.update(salt);
 
             final byte[] hash = digest.digest(content.getBytes(StandardCharsets.UTF_8));

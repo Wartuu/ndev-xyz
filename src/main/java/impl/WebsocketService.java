@@ -1,12 +1,17 @@
 package impl;
 
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import impl.json.ConfigJson;
+import impl.utils.Utils;
+import impl.utils.finals.Global;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 
@@ -23,6 +28,7 @@ public class WebsocketService extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
+
         logger.info("new connection from: " + webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
     }
 
@@ -33,16 +39,19 @@ public class WebsocketService extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket webSocket, String msg) {
+        Global.pluginManager.triggerHook("@onWebsocketMessage");
         broadcast(msg);
     }
 
     @Override
     public void onMessage(WebSocket webSocket, ByteBuffer msg) {
+        Global.pluginManager.triggerHook("@onWebsocketMessage");
         broadcast(msg.array());
     }
 
     @Override
     public void onError(WebSocket webSocket, Exception e) {
+        Global.pluginManager.triggerHook("@onWebsocketError");
         logger.error("error has occurred: " + e.toString());
 
         if (webSocket == null)

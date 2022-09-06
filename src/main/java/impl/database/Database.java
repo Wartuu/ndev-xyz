@@ -20,6 +20,8 @@ public class Database {
 
     private static final String[] illegalUsernameSimbols = {"=", "'", "\"", "\\", "/", ",", "\0", "\b", "\n", "\r", "\t", "%", "$", "*"};
 
+
+
     public Database(ConfigJson cfg) {
         config = cfg;
     }
@@ -258,11 +260,10 @@ public class Database {
 
 
             byte[] salt = Utils.generateSalt();
-            password = Utils.sha256(password, salt);
+            password = Utils.sha512(password, salt);
             password = Utils.byteToHex(salt) + ":" + password;
 
-            logger.info(String.valueOf(password.length()));
-            logger.info(password);
+            logger.debug(String.valueOf(password.length()));
 
             statement.executeUpdate(
                     "insert into account " +
