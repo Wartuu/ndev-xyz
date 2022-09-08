@@ -23,9 +23,9 @@ public class Login implements HttpHandler {
 
 
 
-            if(Global.database.containsIllegalCharacter(accessJson.getUsername())) {
+            if(Global.database.findSpecialCharacter(accessJson.getUsername())) {
                 logger.info("illegal character or user does not exist");
-                outputJson.setReason("input contains illegal character");
+                outputJson.setReason("illegal character or user does not exist");
                 outputJson.setSuccess(false);
                 Utils.sendOutput(exchange, Global.gson.toJson(outputJson), false, 200);
                 return;
@@ -57,7 +57,8 @@ public class Login implements HttpHandler {
                 Utils.sendOutput(exchange, Global.gson.toJson(outputJson), false, 200);
             } else {
 
-                outputJson.setReason("wrong password/username or input contains illegal character");
+                logger.info("illegal character or user does not exist");
+                outputJson.setReason("illegal character or user does not exist");
                 outputJson.setSuccess(false);
                 Utils.sendOutput(exchange, Global.gson.toJson(outputJson), false, 200);
             }

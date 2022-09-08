@@ -2,14 +2,14 @@ package impl;
 
 import com.sun.net.httpserver.HttpServer;
 import impl.handler.api.v1.*;
-import impl.handler.user.*;
+import impl.handler.support.Robots;
+import impl.handler.vue.AdminRouter;
+import impl.handler.vue.UserRouter;
 import impl.json.ConfigJson;
-import impl.handler.admin.AdminConsole;
 import impl.json.VersionJson;
 import impl.database.Database;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
-import impl.plugin.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,13 +48,6 @@ public class HttpService {
             logger.info("creating context");
             httpServer = HttpServer.create(new InetSocketAddress(config.getHttpPort()), 0);
 
-            // user
-            httpServer.createContext("/", new Home());
-            httpServer.createContext("/chat", new Chat());
-            httpServer.createContext("/tos", new Tos());
-            httpServer.createContext("/login", new LoginPage());
-            httpServer.createContext("/register", new RegisterPage());
-
             //api
 
             VersionJson versionJson = new VersionJson();
@@ -69,9 +62,10 @@ public class HttpService {
             httpServer.createContext("/api/v1/login", new Login());
             httpServer.createContext("/api/v1/logout", new Logout());
 
-
-            // admin
-            httpServer.createContext("/admin/console", new AdminConsole());
+            // vue.js
+            httpServer.createContext("/", new UserRouter());
+            httpServer.createContext("/admin", new AdminRouter());
+            httpServer.createContext("/robots.txt", new Robots());
 
             Utils.loadStaticHandlers(httpServer);
 
