@@ -9,6 +9,6 @@ import java.io.IOException;
 public class Robots implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        Utils.sendOutput(exchange, "", false, 200);
+        Utils.sendOutput(exchange, Utils.getResource("robots.txt"), false, 200);
     }
 }
