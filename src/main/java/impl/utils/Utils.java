@@ -78,6 +78,7 @@ public class Utils {
 
     public static boolean sendBytesOutput(HttpExchange exchange, byte[] content, int rCode) {
         try {
+            logger.debug("Sending output with " + content.length + "b, uri: " + exchange.getRequestURI());
             OutputStream outputStream = exchange.getResponseBody();
             exchange.sendResponseHeaders(rCode, content.length);
             outputStream.write(content);
@@ -126,7 +127,13 @@ public class Utils {
     public static String getFile(String path) {
         StringBuilder builder = new StringBuilder();
         try {
-            return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.ISO_8859_1);
+            List<String> lines = Files.readAllLines(Paths.get(path));
+
+            for (String line : lines) {
+                builder.append(line);
+            }
+
+            return builder.toString();
 
         } catch (Exception e) {logger.error(e.getMessage());}
 
@@ -343,6 +350,20 @@ public class Utils {
         return staticFiles;
     }
 
+    public static boolean doesSupportGzip(HttpExchange exchange) {
+        List<String> encodings = exchange.getRequestHeaders().get("Accept-Encoding");
+
+        if(encodings == null) {return false;}
+
+        for (String encode : encodings) {
+            if(encode.toLowerCase(Locale.ROOT).contains("gzip")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
     public static void loadStaticHandlers(HttpServer httpServer) {
 
         for (String file : Utils.getStaticFiles()) {
@@ -350,7 +371,7 @@ public class Utils {
             ext = ext.substring(1);
             String path = "/static/" +ext+"/"+file;
             String content = Utils.getFile("static/" + file);
-            byte[] compressed = Gzip.createGzip(content);
+            byte[] compressed = Gzip.createGzip(Utils.getFile("static/" + file));
             String mimeType = getMimeMap().get(ext);
 
             logger.info(file + ": uncompressed: " + content.getBytes(StandardCharsets.UTF_8).length + ", compressed: " + compressed.length);
@@ -360,12 +381,25 @@ public class Utils {
                 httpServer.createContext(path, new HttpHandler() {
                     @Override
                     public void handle(HttpExchange exchange) throws IOException {
-                        exchange.getResponseHeaders().set("Content-Encoding", "gzip");
-                        exchange.getResponseHeaders().set("Content-Type", mimeType);
-                        exchange.getResponseHeaders().set("Transfer-Encoding", "gzip");
-                        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
 
-                        Utils.sendBytesOutput(exchange, compressed, 200);
+
+                        if(doesSupportGzip(exchange)) {
+                            exchange.getResponseHeaders().set("Content-Encoding", "gzip");
+                            exchange.getResponseHeaders().set("Content-Type", mimeType);
+                            exchange.getResponseHeaders().set("Transfer-Encoding", "gzip");
+                            exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+                            Utils.sendBytesOutput(exchange, compressed, 200);
+
+                        } else {
+                            exchange.getResponseHeaders().set("Content-Type", mimeType);
+                            exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+                            Utils.sendOutput(exchange, content, false, 200);
+                        }
+
+
+
+
+
                     }
                 });
             } else {
