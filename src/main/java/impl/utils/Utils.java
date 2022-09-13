@@ -81,6 +81,7 @@ public class Utils {
             OutputStream outputStream = exchange.getResponseBody();
             exchange.sendResponseHeaders(rCode, content.length);
             outputStream.write(content);
+            outputStream.flush();
             outputStream.close();
             return true;
         } catch (Exception e) {logger.error(e.getMessage());}
@@ -125,14 +126,7 @@ public class Utils {
     public static String getFile(String path) {
         StringBuilder builder = new StringBuilder();
         try {
-            File file = new File(path);
-            Scanner scanner = new Scanner(file);
-
-            while(scanner.hasNextLine()) {
-                builder.append(scanner.nextLine());
-            }
-            scanner.close();
-            return builder.toString();
+            return new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.ISO_8859_1);
 
         } catch (Exception e) {logger.error(e.getMessage());}
 
@@ -366,10 +360,12 @@ public class Utils {
                 httpServer.createContext(path, new HttpHandler() {
                     @Override
                     public void handle(HttpExchange exchange) throws IOException {
-                        exchange.getResponseHeaders().set("Content-Encoding:", "gzip");
+                        exchange.getResponseHeaders().set("Content-Encoding", "gzip");
                         exchange.getResponseHeaders().set("Content-Type", mimeType);
+                        exchange.getResponseHeaders().set("Transfer-Encoding", "gzip");
                         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
                         Utils.sendBytesOutput(exchange, compressed, 200);
+                        //Utils.sendOutput(exchange, content, false, 200);
                     }
                 });
             } else {
@@ -377,8 +373,8 @@ public class Utils {
                 httpServer.createContext(path, new HttpHandler() {
                     @Override
                     public void handle(HttpExchange exchange) throws IOException {
-                        exchange.getResponseHeaders().set("Content-Type", mimeType);
-                        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+                        exchange.getResponseHeaders().add("Content-Type", mimeType);
+                        exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
                         Utils.sendOutput(exchange, content, false, 200);
                     }
                 });
@@ -389,7 +385,7 @@ public class Utils {
     public static HashMap<String,String> getMimeMap() {
         HashMap<String, String> mimes = new HashMap<>();
 
-        mimes.put("js", "text/javascript");
+        mimes.put("js", "application/javascript");
         mimes.put("css", "text/css");
 
         return mimes;
