@@ -364,8 +364,8 @@ public class Utils {
                         exchange.getResponseHeaders().set("Content-Type", mimeType);
                         exchange.getResponseHeaders().set("Transfer-Encoding", "gzip");
                         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+
                         Utils.sendBytesOutput(exchange, compressed, 200);
-                        //Utils.sendOutput(exchange, content, false, 200);
                     }
                 });
             } else {
