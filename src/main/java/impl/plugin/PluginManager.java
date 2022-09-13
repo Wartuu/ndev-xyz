@@ -2,7 +2,6 @@ package impl.plugin;
 
 import impl.HttpService;
 import impl.WebsocketService;
-import impl.database.Database;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.slf4j.Logger;
@@ -11,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
-import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -39,7 +37,7 @@ public class PluginManager {
 
 
         for(String pluginFile : Utils.getPlugins()) {
-            String pluginScript = Utils.getResource("plugins/" + pluginFile);
+            String pluginScript = Utils.getFile("plugins/" + pluginFile);
 
             try {
                 engine.eval(pluginScript);

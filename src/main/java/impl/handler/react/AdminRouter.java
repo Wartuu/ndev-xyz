@@ -14,9 +14,9 @@ import java.io.IOException;
 
 public class AdminRouter implements HttpHandler {
 
-    private Logger logger = LoggerFactory.getLogger(AdminRouter.class);
-    private String userPage;
-    private String adminPage;
+    private final Logger logger = LoggerFactory.getLogger(AdminRouter.class);
+    private final String userPage;
+    private final String adminPage;
 
     public AdminRouter(String userPage, String adminPage) {
         this.userPage = HtmlParser.parse(userPage);
@@ -26,18 +26,21 @@ public class AdminRouter implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         Account account = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
+        logger.info("loading admin page");
 
         if(account == null) {
+            logger.info("no account");
             Utils.sendOutput(exchange, userPage, false, 200);
             return;
         } else {
             Global.database.updateLastIpAndDate(exchange, account);
         }
 
-        if(account.getAccountType() >= AccountType.ADMIN.getAccountType()) {
-            Utils.sendOutput(exchange, Utils.getResource(adminPage), false, 200);
+        logger.info(String.valueOf(account.getAccountType()));
+        if(account.getAccountType() > AccountType.NORMAL.getAccountType()) {
+            Utils.sendOutput(exchange, adminPage, false, 200);
         } else {
-            Utils.sendOutput(exchange, Utils.getResource(userPage), false, 200);
+            Utils.sendOutput(exchange, userPage, false, 200);
         }
     }
 }

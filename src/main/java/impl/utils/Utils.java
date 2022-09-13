@@ -13,21 +13,25 @@ import impl.utils.finals.Global;
 import impl.utils.gzip.Gzip;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.net.www.http.HttpClient;
 
 import java.io.*;
+import java.net.HttpCookie;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.GZIPOutputStream;
+import java.util.stream.Stream;
 
 public class Utils {
+
     private static Logger logger = LoggerFactory.getLogger(Utils.class);
 
     public static String getFromPost(HttpExchange exchange)
@@ -101,26 +105,41 @@ public class Utils {
 
     public static String getResource(String file) {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(file);
+        InputStream fileStream = classLoader.getResourceAsStream(file);
+        InputStreamReader fileReader = new InputStreamReader(fileStream, StandardCharsets.UTF_8);
+        BufferedReader reader = new BufferedReader(fileReader);
 
-        if (inputStream == null) {return "";}
-        InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        BufferedReader reader = new BufferedReader(inputStreamReader);
-
-        StringBuilder output = new StringBuilder();
+        StringBuilder rawFile = new StringBuilder();
 
         try {
             for(String line; (line = reader.readLine()) != null;) {
-                output.append(line);
+                rawFile.append(line);
             }
-            return output.toString();
-        } catch (IOException e) {
-            logger.warn(e.toString());
-        }
+        } catch (Exception e) {logger.info(e.getMessage());}
 
-        return output.toString();
+
+        return rawFile.toString();
     }
 
+
+    public static String getFile(String path) {
+        StringBuilder builder = new StringBuilder();
+        try {
+            File file = new File(path);
+            Scanner scanner = new Scanner(file);
+
+            while(scanner.hasNextLine()) {
+                builder.append(scanner.nextLine());
+            }
+            scanner.close();
+            return builder.toString();
+
+        } catch (Exception e) {logger.error(e.getMessage());}
+
+
+
+        return builder.toString();
+    }
 
     public static ConfigJson getConfig(String configName) {
         try {
@@ -177,7 +196,7 @@ public class Utils {
         return null;
     }
 
-    public static String getUriContentByName(HttpExchange exchange, String UriName) {
+    public static String getQuery(HttpExchange exchange, String UriName) {
         String[] query = exchange.getRequestURI().getQuery().split("&");
         List<String> queryfull = new ArrayList<String>(query.length*2);
         for (int i = 0; i < query.length;i++) {
@@ -302,16 +321,14 @@ public class Utils {
 
     public static ArrayList<String> getStaticFiles() {
         ArrayList<String> staticFiles = new ArrayList<>();
+        File directory = new File("static");
+        File[] plugins = directory.listFiles();
         try {
-            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("static");
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String resFile;
-            while((resFile = bufferedReader.readLine()) != null) {
-                staticFiles.add(resFile);
+            for (int i = 0; i<plugins.length;i++) {
+                if (plugins[i].isFile()) {
+                    staticFiles.add(plugins[i].getName());
+                }
             }
-            inputStream.close();
-            bufferedReader.close();
-
         } catch (Exception e) {logger.warn(e.toString()); return null;};
 
         return staticFiles;
@@ -319,16 +336,14 @@ public class Utils {
 
     public static ArrayList<String> getPlugins() {
         ArrayList<String> staticFiles = new ArrayList<>();
+        File directory = new File("plugins");
+        File[] plugins = directory.listFiles();
         try {
-            InputStream inputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream("plugins");
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String resFile;
-            while((resFile = bufferedReader.readLine()) != null) {
-                staticFiles.add(resFile);
+            for (int i = 0; i<plugins.length;i++) {
+                if (plugins[i].isFile()) {
+                    staticFiles.add(plugins[i].getName());
+                }
             }
-            inputStream.close();
-            bufferedReader.close();
-
         } catch (Exception e) {logger.warn(e.toString()); return null;};
 
         return staticFiles;
@@ -339,9 +354,10 @@ public class Utils {
         for (String file : Utils.getStaticFiles()) {
             String ext = file.substring(file.lastIndexOf('.'));
             ext = ext.substring(1);
-            String path = "/static/"+ext+"/"+file;
-            String content = Utils.getResource("static/" + file);
+            String path = "/static/" +ext+"/"+file;
+            String content = Utils.getFile("static/" + file);
             byte[] compressed = Gzip.createGzip(content);
+            String mimeType = getMimeMap().get(ext);
 
             logger.info(file + ": uncompressed: " + content.getBytes(StandardCharsets.UTF_8).length + ", compressed: " + compressed.length);
 
@@ -351,6 +367,8 @@ public class Utils {
                     @Override
                     public void handle(HttpExchange exchange) throws IOException {
                         exchange.getResponseHeaders().set("Content-Encoding:", "gzip");
+                        exchange.getResponseHeaders().set("Content-Type", mimeType);
+                        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
                         Utils.sendBytesOutput(exchange, compressed, 200);
                     }
                 });
@@ -359,6 +377,8 @@ public class Utils {
                 httpServer.createContext(path, new HttpHandler() {
                     @Override
                     public void handle(HttpExchange exchange) throws IOException {
+                        exchange.getResponseHeaders().set("Content-Type", mimeType);
+                        exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
                         Utils.sendOutput(exchange, content, false, 200);
                     }
                 });
@@ -366,5 +386,13 @@ public class Utils {
         }
     }
 
+    public static HashMap<String,String> getMimeMap() {
+        HashMap<String, String> mimes = new HashMap<>();
+
+        mimes.put("js", "text/javascript");
+        mimes.put("css", "text/css");
+
+        return mimes;
+    }
 
 }

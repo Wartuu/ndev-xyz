@@ -17,7 +17,7 @@ public class UserLookup implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         Account account = null;
         exchange.getResponseHeaders().add("Content-Type", "application/json");
-        String user = Utils.getUriContentByName(exchange, "user");
+        String user = Utils.getQuery(exchange, "user");
         logger.info("userlookup: " + user);
 
         Utils.sendOutput(exchange,Global.gson.toJson(Global.database.getAccountByUsername(user)), false, 200);

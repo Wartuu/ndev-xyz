@@ -32,8 +32,8 @@ public class HttpService {
 
     public HttpService(ConfigJson cfg) {
         config = cfg;
-        userRouterPage = Utils.getResource("html/react-user.html");
-        adminRouterPage = Utils.getResource("html/react-admin.html");
+        userRouterPage = Utils.getFile("html/react-user.html");
+        adminRouterPage = Utils.getFile("html/react-admin.html");
     }
 
     public void stop() {
@@ -71,6 +71,7 @@ public class HttpService {
             httpServer.createContext("/admin", new AdminRouter(userRouterPage, adminRouterPage));
             httpServer.createContext("/robots.txt", new Robots());
 
+            logger.info("loading static uri...");
             Utils.loadStaticHandlers(httpServer);
 
             threadPoolExecutor = Utils.getThreadpoolExecutor();

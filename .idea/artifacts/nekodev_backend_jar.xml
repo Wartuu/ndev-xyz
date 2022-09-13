@@ -10,7 +10,7 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-simple/1.7.36/slf4j-simple-1.7.36.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/postgresql-42.3.5.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar" path-in-jar="/" />
-      <element id="module-output" name="main" />
+      <element id="module-output" name="nekodev-backend" />
     </root>
   </artifact>
 </component>
