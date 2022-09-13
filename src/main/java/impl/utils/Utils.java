@@ -10,6 +10,7 @@ import impl.json.ConfigJson;
 import impl.utils.executor.ExecutorRejectionHandler;
 import impl.utils.executor.ExecutorThreadFactory;
 import impl.utils.finals.Global;
+import impl.utils.gzip.Gzip;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPOutputStream;
 
 public class Utils {
     private static Logger logger = LoggerFactory.getLogger(Utils.class);
@@ -43,10 +45,10 @@ public class Utils {
         return in;
     }
 
-    public static boolean sendOutput(HttpExchange exchange, String output, boolean isLarge ,int rCode) {
-        logger.debug("Sending output with " + output.getBytes().length + "b, isLarge: " + isLarge + ", uri: " + exchange.getRequestURI());
+    public static boolean sendOutput(HttpExchange exchange, String output, boolean byteByByte ,int rCode) {
+        logger.debug("Sending output with " + output.getBytes().length + "b, byteByByte: " + byteByByte + ", uri: " + exchange.getRequestURI());
         try {
-            if(isLarge) {
+            if(byteByByte) {
                 exchange.sendResponseHeaders(rCode, output.length());
                 OutputStream outputStream = exchange.getResponseBody();
 
@@ -67,6 +69,32 @@ public class Utils {
             }
 
         } catch (Exception exception) {logger.warn(exception.toString());}
+        return false;
+    }
+
+    public static boolean sendBytesOutput(HttpExchange exchange, byte[] content, int rCode) {
+        try {
+            OutputStream outputStream = exchange.getResponseBody();
+            exchange.sendResponseHeaders(rCode, content.length);
+            outputStream.write(content);
+            outputStream.close();
+            return true;
+        } catch (Exception e) {logger.error(e.getMessage());}
+        return false;
+    }
+    public static boolean gzipOutput(HttpExchange exchange, String content, int rCode) {
+
+        exchange.getResponseHeaders().set("Content-Encoding:", "gzip");
+        OutputStream outputStream = exchange.getResponseBody();
+        logger.info("+---| sending gzip, size before compression: " + content.getBytes().length + "b");
+        byte[] gzip = Gzip.createGzip(content);
+
+        try {
+            exchange.sendResponseHeaders(rCode, gzip.length);
+            outputStream.write(gzip);
+            outputStream.close();
+            return true;
+        } catch (Exception e) {logger.error(e.getMessage());}
         return false;
     }
 
@@ -312,12 +340,29 @@ public class Utils {
             String ext = file.substring(file.lastIndexOf('.'));
             ext = ext.substring(1);
             String path = "/static/"+ext+"/"+file;
-            httpServer.createContext(path, new HttpHandler() {
-                @Override
-                public void handle(HttpExchange exchange) throws IOException {
-                    Utils.sendOutput(exchange, HtmlParser.parse(Utils.getResource("static/" + file)), false, 200);
-                }
-            });
+            String content = Utils.getResource("static/" + file);
+            byte[] compressed = Gzip.createGzip(content);
+
+            logger.info(file + ": uncompressed: " + content.getBytes(StandardCharsets.UTF_8).length + ", compressed: " + compressed.length);
+
+            if(content.getBytes().length > compressed.length) {
+                logger.info("using compression for: " + file);
+                httpServer.createContext(path, new HttpHandler() {
+                    @Override
+                    public void handle(HttpExchange exchange) throws IOException {
+                        exchange.getResponseHeaders().set("Content-Encoding:", "gzip");
+                        Utils.sendBytesOutput(exchange, compressed, 200);
+                    }
+                });
+            } else {
+                logger.info("using default for: " + file);
+                httpServer.createContext(path, new HttpHandler() {
+                    @Override
+                    public void handle(HttpExchange exchange) throws IOException {
+                        Utils.sendOutput(exchange, content, false, 200);
+                    }
+                });
+            }
         }
     }
 

@@ -3,8 +3,8 @@ package impl;
 import com.sun.net.httpserver.HttpServer;
 import impl.handler.api.v1.*;
 import impl.handler.support.Robots;
-import impl.handler.vue.AdminRouter;
-import impl.handler.vue.UserRouter;
+import impl.handler.react.AdminRouter;
+import impl.handler.react.UserRouter;
 import impl.json.ConfigJson;
 import impl.json.VersionJson;
 import impl.database.Database;
@@ -26,10 +26,14 @@ public class HttpService {
     public HttpServer httpServer;
 
     private static final Logger logger = LoggerFactory.getLogger(HttpService.class);
+    private static String userRouterPage;
+    private static String adminRouterPage;
 
 
     public HttpService(ConfigJson cfg) {
         config = cfg;
+        userRouterPage = Utils.getResource("html/react-user.html");
+        adminRouterPage = Utils.getResource("html/react-admin.html");
     }
 
     public void stop() {
@@ -63,8 +67,8 @@ public class HttpService {
             httpServer.createContext("/api/v1/logout", new Logout());
 
             // vue.js
-            httpServer.createContext("/", new UserRouter());
-            httpServer.createContext("/admin", new AdminRouter());
+            httpServer.createContext("/", new UserRouter(userRouterPage));
+            httpServer.createContext("/admin", new AdminRouter(userRouterPage, adminRouterPage));
             httpServer.createContext("/robots.txt", new Robots());
 
             Utils.loadStaticHandlers(httpServer);
