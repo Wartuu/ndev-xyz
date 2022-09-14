@@ -432,6 +432,7 @@ public class Utils {
 
         mimes.put("js", "application/javascript");
         mimes.put("css", "text/css");
+        mimes.put("ico", "image/x-icon");
 
         return mimes;
     }

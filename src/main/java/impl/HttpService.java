@@ -37,7 +37,7 @@ public class HttpService {
         config = cfg;
         userRouterPage = Utils.getFile("html/react-user.html");
         adminRouterPage = Utils.getFile("html/react-admin.html");
-        faviconContent = Utils.getResource("favicon.ico").getBytes();
+        faviconContent = Utils.getResourceAsBytes("favicon.ico");
         robotsContent = Utils.getResource("robots.txt");
     }
 
