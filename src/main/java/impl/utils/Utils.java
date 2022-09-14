@@ -227,14 +227,6 @@ public class Utils {
         JsonObject jsonObject = new JsonParser().parse(json).getAsJsonObject();
         return jsonObject.get(searchedVar).getAsString();
     }
-    public static void createResourceHandler(HttpServer server, String path, boolean isLarge) {
-        server.createContext(path, new HttpHandler() {
-            @Override
-            public void handle(HttpExchange exchange) throws IOException {
-                Utils.sendOutput(exchange, Utils.getResource(path), isLarge, 200);
-            }
-        });
-    }
 
     public static String sha512(String content, byte[] salt) {
         String out = null;
