@@ -35,9 +35,5 @@ public class Main {
         pluginManagerThread.start();
 
 
-
-
-
-
     }
 }

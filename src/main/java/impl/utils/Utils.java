@@ -13,7 +13,7 @@ import impl.utils.finals.Global;
 import impl.utils.gzip.Gzip;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.net.www.http.HttpClient;
+
 
 import java.io.*;
 import java.net.HttpCookie;
@@ -121,6 +121,17 @@ public class Utils {
 
 
         return rawFile.toString();
+    }
+
+    public static byte[] getResourceAsBytes(String file) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        InputStream fileStream = classLoader.getResourceAsStream(file);
+
+        try {
+            assert fileStream != null;
+            return fileStream.readAllBytes();
+        } catch (Exception e) {logger.error(e.getMessage());}
+        return null;
     }
 
 

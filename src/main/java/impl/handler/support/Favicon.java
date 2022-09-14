@@ -6,15 +6,15 @@ import impl.utils.Utils;
 
 import java.io.IOException;
 
-public class Robots implements HttpHandler {
-    private String robotsFile;
-
-    public Robots(String robotsFile) {
-        this.robotsFile = robotsFile;
+public class Favicon implements HttpHandler {
+    private byte[] faviconFile;
+    public Favicon(byte[] faviconFile) {
+        this.faviconFile = faviconFile;
     }
+
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        Utils.sendOutput(exchange, robotsFile, false, 200);
+        Utils.sendBytesOutput(exchange, faviconFile, 200);
     }
 }

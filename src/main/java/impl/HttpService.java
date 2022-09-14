@@ -2,6 +2,7 @@ package impl;
 
 import com.sun.net.httpserver.HttpServer;
 import impl.handler.api.v1.*;
+import impl.handler.support.Favicon;
 import impl.handler.support.Robots;
 import impl.handler.react.AdminRouter;
 import impl.handler.react.UserRouter;
@@ -28,12 +29,16 @@ public class HttpService {
     private static final Logger logger = LoggerFactory.getLogger(HttpService.class);
     private static String userRouterPage;
     private static String adminRouterPage;
+    private static byte[] faviconContent;
+    private static String robotsContent;
 
 
     public HttpService(ConfigJson cfg) {
         config = cfg;
         userRouterPage = Utils.getFile("html/react-user.html");
         adminRouterPage = Utils.getFile("html/react-admin.html");
+        faviconContent = Utils.getResource("favicon.ico").getBytes();
+        robotsContent = Utils.getResource("robots.txt");
     }
 
     public void stop() {
@@ -69,7 +74,9 @@ public class HttpService {
             // vue.js
             httpServer.createContext("/", new UserRouter(userRouterPage));
             httpServer.createContext("/admin", new AdminRouter(userRouterPage, adminRouterPage));
-            httpServer.createContext("/robots.txt", new Robots());
+            httpServer.createContext("/robots.txt", new Robots(robotsContent));
+            httpServer.createContext("/favicon.ico", new Favicon(faviconContent));
+
 
             logger.info("loading static uri...");
             Utils.loadStaticHandlers(httpServer);
