@@ -38,7 +38,9 @@ java -jar ImShare-VERSION.jar
 
 * [ ] - Admin panel
 
-* [X] - Plugins support ( for server side)
+* [X] - Plugins support (for server side)
+
+* [ ] - Plugins support (for frontend side)
 
 * [ ] - Community panel (chat, forums)
 
@@ -55,6 +57,9 @@ java -jar ImShare-VERSION.jar
 * [ ] - Public user accounts (like steam etc)
 
 * [X] - ImShare admin panel controll app
+
+* [X] - Uploading notes/files (protected with password, burn after read etc)
+
 
 ### Config file - ImShare.json
 * best config can be found in /src/java/resource/config.json
