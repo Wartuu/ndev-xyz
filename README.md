@@ -60,6 +60,8 @@ java -jar ImShare-VERSION.jar
 
 * [X] - Uploading notes/files (protected with password, burn after read etc)
 
+* [X] - GZIP larger static files and etc
+
 
 ### Config file - ImShare.json
 * best config can be found in /src/java/resource/config.json
