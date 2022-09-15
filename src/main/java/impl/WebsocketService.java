@@ -18,6 +18,8 @@ import java.nio.ByteBuffer;
 public class WebsocketService extends WebSocketServer {
 
     private static final Logger logger = LoggerFactory.getLogger(WebsocketService.class);
+    public boolean running = false;
+
     private ConfigJson configGson;
 
     public WebsocketService(ConfigJson cfg) {
@@ -63,5 +65,7 @@ public class WebsocketService extends WebSocketServer {
         logger.info("websocket service running at 127.0.0.1:" + this.getPort() + "/");
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);
+
+        running = true;
     }
 }

@@ -33,6 +33,14 @@ public class Database {
         return matcher.find();
     }
 
+    public boolean isConnected() {
+        try {
+             return !connection.isClosed();
+        }catch (Exception e) {logger.warn(e.getMessage());}
+
+        return false;
+    }
+
     public void connect() {
 
         connectionProperties.setProperty("password", config.getDatabasePassword());
@@ -51,6 +59,8 @@ public class Database {
     }
 
     public String execute(String query, String outputValue) {
+        if(!isConnected()) {return null;}
+
         StringBuilder output = new StringBuilder();
         try {
             Statement statement = connection.createStatement();
@@ -74,6 +84,8 @@ public class Database {
     }
 
     public void update(String query) {
+        if(!isConnected()) {return;}
+
         Statement statement = null;
         try {
             statement = connection.createStatement();
@@ -84,6 +96,8 @@ public class Database {
     }
 
     public Account getAccountById(long id) {
+        if(!isConnected()) {return null;}
+
         try {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from account where id=" + id);
@@ -112,6 +126,8 @@ public class Database {
     }
 
     public Account getAccountByUsername(String username) {
+        if(!isConnected()) {return null;}
+
         try {
 
             String sql = "select * from account where username = ?";
@@ -143,6 +159,8 @@ public class Database {
     }
 
     public Account getAccountBySession(String session) {
+        if(!isConnected()) {return null;}
+
         try {
             String sql = "select * from account where session_token = ?";
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -174,6 +192,8 @@ public class Database {
     }
 
     public Account getAccountByAuthToken(String authToken) {
+        if(!isConnected()) {return null;}
+
         try {
 
             String sql = "select * from account where auth_token = \"?\"";
@@ -205,6 +225,8 @@ public class Database {
 
 
     public RegisterJson createNewAccount(HttpExchange exchange, String username, String password, int accountType) {
+        if(!isConnected()) {return null;}
+
         RegisterJson registerJson = new RegisterJson();
 
         try {
@@ -283,6 +305,8 @@ public class Database {
 
 
     public Account generateNewSession(Account account) {
+        if(!isConnected()) {return null;}
+
         try {
             Random random = new Random();
             String session = random.ints(97,123).limit(128).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
@@ -304,6 +328,8 @@ public class Database {
     }
 
     public Account deleteSession(Account account) {
+        if(!isConnected()) {return null;}
+
         try {
             Statement statement = connection.createStatement();
 
@@ -322,6 +348,7 @@ public class Database {
     }
 
     public void updateLastIpAndDate(HttpExchange exchange, Account account) {
+        if(!isConnected()) {return;}
 
         try {
 

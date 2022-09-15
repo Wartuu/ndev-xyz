@@ -52,6 +52,7 @@ public class PluginManager {
     }
 
     private void loadPlugins() {
+        logger.info("loading plugins...");
         for (FunctionHook hook : functionHooks) {
             try {
                 if(hook.getHookName().equals("@load")) {

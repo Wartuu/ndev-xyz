@@ -22,7 +22,7 @@ public class HttpService {
 
     private static ThreadPoolExecutor threadPoolExecutor;
     private static ConfigJson config;
-    public static boolean isRunning = false;
+    public boolean running = false;
 
     public HttpServer httpServer;
 
@@ -42,7 +42,7 @@ public class HttpService {
     }
 
     public void stop() {
-        if(isRunning && httpServer != null) {
+        if(running && httpServer != null) {
             httpServer.stop(0);
             httpServer = null;
             logger.info("http service stopped");
@@ -87,6 +87,8 @@ public class HttpService {
             httpServer.start();
             logger.info("Running at http://127.0.0.1:" + config.getHttpPort() + "/");
             logger.info("StartTime set to " +  Global.startTime.toString());
+
+            running = true;
 
         } catch (IOException e) {e.printStackTrace();}
     }

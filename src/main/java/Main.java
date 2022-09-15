@@ -28,6 +28,18 @@ public class Main {
         httpServiceThread.setName("http-service-01");
         httpServiceThread.start();
 
+        while (true) {
+            try {
+                if(httpService.running && websocketService.running) {
+                    break;
+                }
+
+                Thread.sleep(250);
+                logger.info("waiting for httpService & websocketService");
+            } catch (Exception ignored){}
+
+        }
+
         logger.info("starting plugin manager");
         Global.pluginManager = new PluginManager(httpService, websocketService);
         Thread pluginManagerThread = new Thread(Global.pluginManager::hookLoop);
