@@ -9,6 +9,7 @@ import impl.handler.react.UserRouter;
 import impl.json.ConfigJson;
 import impl.json.VersionJson;
 import impl.database.Database;
+import impl.utils.NotesBin;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.slf4j.Logger;
@@ -53,6 +54,10 @@ public class HttpService {
         try{
             Global.database = new Database(config);
             Global.database.connect();
+
+            Global.notesBin = new NotesBin(config.getNotesBinUrl(), config.getNotesBinId(), config.getNotesBinAuth());
+
+
 
             logger.info("creating context");
             httpServer = HttpServer.create(new InetSocketAddress(config.getHttpPort()), 0);

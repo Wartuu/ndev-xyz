@@ -34,7 +34,7 @@ public class Main {
                     break;
                 }
 
-                Thread.sleep(250);
+                Thread.sleep(2500);
                 logger.info("waiting for httpService & websocketService");
             } catch (Exception ignored){}
 

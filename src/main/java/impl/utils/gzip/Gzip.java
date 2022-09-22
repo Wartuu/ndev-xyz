@@ -50,6 +50,8 @@ public class Gzip {
                 gzipOutputStream.flush();
             }
 
+
+
             gzipOutputStream.finish();
             gzipOutputStream.close();
             inputStream.close();

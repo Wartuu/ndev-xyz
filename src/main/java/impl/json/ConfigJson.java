@@ -41,6 +41,15 @@ public class ConfigJson {
     @SerializedName("server-domain")
     private String serverDomain;
 
+    @SerializedName("NotesBin-id")
+    private String NotesBinId;
+
+    @SerializedName("NotesBin-url")
+    private String NotesBinUrl;
+
+    @SerializedName("NotesBin-auth")
+    private String NotesBinAuth;
+
     public int getHttpPort() {
         return httpPort;
     }
@@ -91,5 +100,17 @@ public class ConfigJson {
 
     public String getServerDomain() {
         return serverDomain;
+    }
+
+    public String getNotesBinId() {
+        return NotesBinId;
+    }
+
+    public String getNotesBinUrl() {
+        return NotesBinUrl;
+    }
+
+    public String getNotesBinAuth() {
+        return NotesBinAuth;
     }
 }
