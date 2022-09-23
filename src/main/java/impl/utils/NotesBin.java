@@ -81,6 +81,7 @@ public class NotesBin {
             }
         } catch (IOException e) {logger.error(e.getMessage());}
 
+         return null;
     }
 
 
