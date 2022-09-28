@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import impl.database.Account;
 import impl.json.ConfigJson;
 import impl.utils.executor.ExecutorRejectionHandler;
 import impl.utils.executor.ExecutorThreadFactory;
@@ -372,6 +373,7 @@ public class Utils {
         for (String file : Utils.getStaticFiles()) {
             String ext = file.substring(file.lastIndexOf('.'));
             ext = ext.substring(1);
+            boolean isAdminOnly = file.toLowerCase(Locale.ROOT).contains("admin");
             String path = "/static/" +ext+"/"+file;
             String content = Utils.getFile("static/" + file);
             byte[] compressed = Gzip.createGzip(Utils.getFile("static/" + file));
@@ -381,11 +383,21 @@ public class Utils {
 
             if(content.getBytes().length > compressed.length) {
                 logger.info("using compression for: " + file);
-                httpServer.createContext(path, new HttpHandler() {
-                    @Override
-                    public void handle(HttpExchange exchange) throws IOException {
+                httpServer.createContext(path, exchange -> {
+                    boolean access = true;
+                    if(isAdminOnly) {
+                        Account account = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
+                        if(account == null) {
+                            Utils.sendOutput(exchange, HtmlParser.parse(Utils.getFile("html/404.html")), false, 200);
+                        }
 
+                        if(account.getAccountType() < AccountType.ADMIN.getAccountType()) {
+                            access = false;
+                        }
+                    }
+                    logger.info(String.valueOf(access));
 
+                    if(access) {
                         if(doesSupportGzip(exchange)) {
                             exchange.getResponseHeaders().set("Content-Encoding", "gzip");
                             exchange.getResponseHeaders().set("Content-Type", mimeType);
@@ -398,22 +410,36 @@ public class Utils {
                             exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
                             Utils.sendOutput(exchange, content, false, 200);
                         }
-
-
-
-
-
+                    } else {
+                        Utils.sendOutput(exchange, HtmlParser.parse(Utils.getFile("html/404.html")), false, 200);
                     }
+
                 });
+
             } else {
                 logger.info("using default for: " + file);
-                httpServer.createContext(path, new HttpHandler() {
-                    @Override
-                    public void handle(HttpExchange exchange) throws IOException {
+                httpServer.createContext(path, exchange -> {
+                    boolean access = true;
+                    if(isAdminOnly) {
+                        Account account = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
+                        if(account == null) {
+                            Utils.sendOutput(exchange, HtmlParser.parse(Utils.getFile("html/404.html")), false, 200);
+                        }
+
+                        if(account.getAccountType() < AccountType.ADMIN.getAccountType()) {
+                            access = false;
+                        }
+                    }
+                    logger.info(String.valueOf(access));
+
+                    if(access) {
                         exchange.getResponseHeaders().add("Content-Type", mimeType);
                         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
                         Utils.sendOutput(exchange, content, false, 200);
+                    } else {
+                        Utils.sendOutput(exchange, HtmlParser.parse(Utils.getFile("html/404.html")), false, 200);
                     }
+
                 });
             }
         }
@@ -425,6 +451,7 @@ public class Utils {
         mimes.put("js", "application/javascript");
         mimes.put("css", "text/css");
         mimes.put("ico", "image/x-icon");
+        mimes.put("html", "test/html");
 
         return mimes;
     }

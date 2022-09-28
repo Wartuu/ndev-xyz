@@ -8,6 +8,9 @@ public class ConfigJson {
     @SerializedName("ws-port")
     private int websocketPort;
 
+    @SerializedName("webrtc-port")
+    private int webRtcPort;
+
     @SerializedName("http-executor-thread-pool-overrun-size")
     private int executorOverrunSize;
 
@@ -42,13 +45,16 @@ public class ConfigJson {
     private String serverDomain;
 
     @SerializedName("NotesBin-id")
-    private String NotesBinId;
+    private String notesBinId;
 
     @SerializedName("NotesBin-url")
-    private String NotesBinUrl;
+    private String notesBinUrl;
 
     @SerializedName("NotesBin-auth")
-    private String NotesBinAuth;
+    private String notesBinAuth;
+
+    @SerializedName("NotesBin-support")
+    private boolean notesBinSupport;
 
     public int getHttpPort() {
         return httpPort;
@@ -102,15 +108,23 @@ public class ConfigJson {
         return serverDomain;
     }
 
+    public int getWebRtcPort() {
+        return webRtcPort;
+    }
+
     public String getNotesBinId() {
-        return NotesBinId;
+        return notesBinId;
     }
 
     public String getNotesBinUrl() {
-        return NotesBinUrl;
+        return notesBinUrl;
     }
 
     public String getNotesBinAuth() {
-        return NotesBinAuth;
+        return notesBinAuth;
+    }
+
+    public boolean isNotesBinSupport() {
+        return notesBinSupport;
     }
 }

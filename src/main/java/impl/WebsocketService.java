@@ -1,36 +1,35 @@
 package impl;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import impl.json.ConfigJson;
-import impl.utils.Utils;
 import impl.utils.finals.Global;
+import impl.utils.irc.ChatRoom;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WebsocketService extends WebSocketServer {
 
     private static final Logger logger = LoggerFactory.getLogger(WebsocketService.class);
+    private static final List<ChatRoom> chatRooms = new ArrayList<>();
     public boolean running = false;
 
-    private ConfigJson configGson;
+    private ConfigJson config;
 
     public WebsocketService(ConfigJson cfg) {
         super(new InetSocketAddress(cfg.getWebsocketPort()));
-        configGson = cfg;
+        this.config = cfg;
 
     }
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
-
         logger.info("new connection from: " + webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
     }
 
@@ -56,8 +55,9 @@ public class WebsocketService extends WebSocketServer {
         Global.pluginManager.triggerHook("@onWebsocketError");
         logger.error("error has occurred: " + e.toString());
 
-        if (webSocket == null)
-            webSocket.close();
+        if (webSocket == null) {
+
+        }
     }
 
     @Override

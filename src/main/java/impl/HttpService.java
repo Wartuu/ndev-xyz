@@ -4,8 +4,7 @@ import com.sun.net.httpserver.HttpServer;
 import impl.handler.api.v1.*;
 import impl.handler.support.Favicon;
 import impl.handler.support.Robots;
-import impl.handler.react.AdminRouter;
-import impl.handler.react.UserRouter;
+import impl.handler.user.Home;
 import impl.json.ConfigJson;
 import impl.json.VersionJson;
 import impl.database.Database;
@@ -55,7 +54,10 @@ public class HttpService {
             Global.database = new Database(config);
             Global.database.connect();
 
-            Global.notesBin = new NotesBin(config.getNotesBinUrl(), config.getNotesBinId(), config.getNotesBinAuth());
+            if (config.isNotesBinSupport()) {
+                Global.notesBin = new NotesBin(config.getNotesBinUrl(), config.getNotesBinId(), config.getNotesBinAuth());
+            }
+
 
 
 
@@ -76,9 +78,10 @@ public class HttpService {
             httpServer.createContext("/api/v1/login", new Login());
             httpServer.createContext("/api/v1/logout", new Logout());
 
-            // vue.js
-            httpServer.createContext("/", new UserRouter(userRouterPage));
-            httpServer.createContext("/admin", new AdminRouter(userRouterPage, adminRouterPage));
+            // user uri
+            httpServer.createContext("/", new Home("html/home.html"));
+
+            // support
             httpServer.createContext("/robots.txt", new Robots(robotsContent));
             httpServer.createContext("/favicon.ico", new Favicon(faviconContent));
 
