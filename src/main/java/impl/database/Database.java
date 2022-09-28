@@ -181,6 +181,7 @@ public class Database {
                 account.setChatAccess(resultSet.getBoolean("chat_access"));
                 account.setSession(session);
                 account.setAuthToken(resultSet.getString("auth_token"));
+
                 return account;
             }
 

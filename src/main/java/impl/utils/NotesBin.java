@@ -49,7 +49,7 @@ public class NotesBin {
                 logger.error("response code was: " + response.code());
                 return;
             }
-        } catch (IOException e) {logger.error(e.getMessage());}
+        } catch (IOException e) {logger.error(e.getMessage()); logger.error("failed connecting to NotesBin at url: " + this.url);}
     }
 
     public String getAuthUrl() {
