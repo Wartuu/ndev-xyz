@@ -22,6 +22,7 @@ public class PluginManager {
     private final List<Plugin> pluginList = new ArrayList<>();
     private ScriptEngine engine;
     private Invocable invEngine;
+    public boolean running = false;
 
 
     public PluginManager(HttpService httpService, WebsocketService websocketService) {
@@ -70,6 +71,7 @@ public class PluginManager {
 
     public void hookLoop() {
         loadPlugins();
+        this.running = true;
 
         while (true) {
 

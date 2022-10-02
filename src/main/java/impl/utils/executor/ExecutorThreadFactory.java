@@ -1,5 +1,6 @@
 package impl.utils.executor;
 
+import com.sun.net.httpserver.HttpHandler;
 import impl.json.ConfigJson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,9 +19,9 @@ public class  ExecutorThreadFactory implements ThreadFactory {
 
     @Override
     public Thread newThread(Runnable runnable) {
+
         Thread thread = new Thread(runnable);
         logger.info(" created new executor thread => [" + thread.getName() + ":id" + thread.getId() + "]");
-
 
         thread.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             private final Logger threadLogger = LoggerFactory.getLogger(thread.getClass());
@@ -31,7 +32,6 @@ public class  ExecutorThreadFactory implements ThreadFactory {
         });
 
         thread.setPriority(config.getExecutorWorkerPriority());
-
         return thread;
     }
 }

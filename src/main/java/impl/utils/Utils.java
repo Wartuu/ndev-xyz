@@ -284,7 +284,12 @@ public class Utils {
 
         for (String cookie : cookies) {
             if(cookie.contains("session-token")) {
-                session = cookie.split("=")[1];
+                String[] sessionArray = cookie.split("=");
+                if(sessionArray.length == 2) {
+                    return sessionArray[1];
+                } else {
+                    return null;
+                }
             }
         }
 
@@ -389,11 +394,14 @@ public class Utils {
                         Account account = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
                         if(account == null) {
                             Utils.sendOutput(exchange, HtmlParser.parse(Utils.getFile("html/404.html")), false, 200);
+                            return;
+                        } else {
+                            if(account.getAccountType() < AccountType.ADMIN.getAccountType()) {
+                                access = false;
+                            }
                         }
 
-                        if(account.getAccountType() < AccountType.ADMIN.getAccountType()) {
-                            access = false;
-                        }
+
                     }
                     logger.info(String.valueOf(access));
 
@@ -424,11 +432,14 @@ public class Utils {
                         Account account = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
                         if(account == null) {
                             Utils.sendOutput(exchange, HtmlParser.parse(Utils.getFile("html/404.html")), false, 200);
+                            return;
+                        } else {
+                            if(account.getAccountType() < AccountType.ADMIN.getAccountType()) {
+                                access = false;
+                            }
                         }
 
-                        if(account.getAccountType() < AccountType.ADMIN.getAccountType()) {
-                            access = false;
-                        }
+
                     }
                     logger.info(String.valueOf(access));
 

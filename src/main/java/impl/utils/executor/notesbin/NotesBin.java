@@ -1,7 +1,5 @@
-package impl.utils;
+package impl.utils.executor.notesbin;
 
-import impl.json.notesbin.NotesBinMapping;
-import impl.json.notesbin.NotesBinUserJson;
 import impl.utils.finals.Global;
 import okhttp3.*;
 import org.slf4j.Logger;
@@ -28,8 +26,7 @@ public class NotesBin {
 
         Request mappingRequest = new Request.Builder()
                 .url(url + "/api/v2/mappings")
-                .addHeader("Authorization", authToken)
-                .build();
+                .addHeader("Authorization", authToken).build();
 
         Call mappingRequestCall = httpClient.newCall(mappingRequest);
 
@@ -42,8 +39,6 @@ public class NotesBin {
                 logger.info(resp);
                 logger.info("connecting to " + url + " successfully");
 
-
-                getUserInfo("xkGVURush2Qp2exDF9uiahIQNCosWmigXj4enKoclPCJXCemBKBkrd1j0VwX9X0o");
             } else {
                 logger.error("getting NotesBin mapping FAILED from url => " + url + "/api/v2/mappings");
                 logger.error("response code was: " + response.code());

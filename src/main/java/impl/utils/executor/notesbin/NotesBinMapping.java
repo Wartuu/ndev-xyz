@@ -1,4 +1,4 @@
-package impl.json.notesbin;
+package impl.utils.executor.notesbin;
 
 import com.google.gson.annotations.SerializedName;
 

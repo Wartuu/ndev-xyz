@@ -66,6 +66,6 @@ public class WebsocketService extends WebSocketServer {
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);
 
-        running = true;
+        this.running = true;
     }
 }

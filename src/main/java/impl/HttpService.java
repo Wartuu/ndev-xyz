@@ -8,7 +8,7 @@ import impl.handler.user.Home;
 import impl.json.ConfigJson;
 import impl.json.VersionJson;
 import impl.database.Database;
-import impl.utils.NotesBin;
+import impl.utils.executor.notesbin.NotesBin;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.slf4j.Logger;
@@ -27,16 +27,12 @@ public class HttpService {
     public HttpServer httpServer;
 
     private static final Logger logger = LoggerFactory.getLogger(HttpService.class);
-    private static String userRouterPage;
-    private static String adminRouterPage;
     private static byte[] faviconContent;
     private static String robotsContent;
 
 
     public HttpService(ConfigJson cfg) {
         config = cfg;
-        userRouterPage = Utils.getFile("html/react-user.html");
-        adminRouterPage = Utils.getFile("html/react-admin.html");
         faviconContent = Utils.getResourceAsBytes("favicon.ico");
         robotsContent = Utils.getResource("robots.txt");
     }
@@ -83,7 +79,7 @@ public class HttpService {
 
             // support
             httpServer.createContext("/robots.txt", new Robots(robotsContent));
-            httpServer.createContext("/favicon.ico", new Favicon(faviconContent));
+            httpServer.createContext("/favicon.ico", new Favicon(faviconContent)).getAuthenticator();
 
 
             logger.info("loading static uri...");
