@@ -296,6 +296,25 @@ public class Utils {
         return session;
     }
 
+    public static String getCurrentSession(List<String> cookies) {
+        String session = null;
+
+        if(cookies == null) {return null;}
+
+        for (String cookie : cookies) {
+            if(cookie.contains("session-token")) {
+                String[] sessionArray = cookie.split("=");
+                if(sessionArray.length == 2) {
+                    return sessionArray[1];
+                } else {
+                    return null;
+                }
+            }
+        }
+
+        return session;
+    }
+
 
     public static ThreadPoolExecutor getThreadpoolExecutor() {
         ThreadPoolExecutor threadPoolExecutor;

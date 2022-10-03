@@ -1,7 +1,5 @@
 import impl.HttpService;
-import impl.WebsocketService;
-import impl.WebRTCService;
-import impl.json.ConfigJson;
+import impl.WebsocketService;import impl.json.ConfigJson;
 import impl.plugin.PluginManager;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
@@ -17,7 +15,6 @@ public class Main {
 
     public static WebsocketService websocketService = null;
     public static HttpService httpService = null;
-    public static WebRTCService webRTCService = null;
 
     public static void main(String[] args) throws Exception {
 
@@ -33,17 +30,17 @@ public class Main {
         logger.info("loading config...");
         ConfigJson configGson = Utils.getConfig(Global.configName);
 
-        logger.info("starting websocket service at port: " + configGson.getWebsocketPort());
-        Thread websocketServiceThread = new Thread(()->{websocketService = new WebsocketService(configGson); websocketService.start();});
-        websocketServiceThread.setName("websocket-service-01");
-        websocketServiceThread.setPriority(Thread.MAX_PRIORITY);
-        websocketServiceThread.start();
-
         logger.info("starting http service at port: " + configGson.getHttpPort());
         Thread httpServiceThread = new Thread(()->{httpService = new HttpService(configGson); httpService.start();});
         httpServiceThread.setName("http-service-01");
         httpServiceThread.setPriority(Thread.MAX_PRIORITY);
         httpServiceThread.start();
+
+        logger.info("starting websocket service at port: " + configGson.getWebsocketPort());
+        Thread websocketServiceThread = new Thread(()->{websocketService = new WebsocketService(configGson, httpService); websocketService.start();});
+        websocketServiceThread.setName("websocket-service-01");
+        websocketServiceThread.setPriority(Thread.MAX_PRIORITY);
+        websocketServiceThread.start();
 
         while (true) {
             try {
@@ -62,15 +59,9 @@ public class Main {
         pluginManagerThread.setName("plugin-manager");
         pluginManagerThread.start();
 
-        logger.info("starting webRTC service at port: " + configGson.getWebRtcPort());
-        Thread webRTCServiceThread = new Thread(()->{webRTCService = new WebRTCService(configGson, httpService); webRTCService.start();});
-        webRTCServiceThread.setName("webRTC-service-01");
-        webRTCServiceThread.setPriority(Thread.MAX_PRIORITY);
-        webRTCServiceThread.start();
-
         while (true) {
             try {
-                if(httpService.running && websocketService.running && webRTCService.running && Global.pluginManager.running) {
+                if(httpService.running && websocketService.running && Global.pluginManager.running) {
                     break;
                 }
                 Thread.sleep(1);

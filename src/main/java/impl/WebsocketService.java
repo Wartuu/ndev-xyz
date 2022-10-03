@@ -1,30 +1,41 @@
 package impl;
 
+import com.google.gson.JsonObject;
+import impl.database.Account;
+import impl.database.Database;
 import impl.json.ConfigJson;
+import impl.utils.Utils;
 import impl.utils.finals.Global;
-import impl.utils.irc.ChatRoom;
+import impl.utils.irc.Room;
+import impl.utils.irc.User;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.xml.crypto.Data;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
 
 public class WebsocketService extends WebSocketServer {
-
     private static final Logger logger = LoggerFactory.getLogger(WebsocketService.class);
-    private static final List<ChatRoom> chatRooms = new ArrayList<>();
+    private static final List<Room> ROOMS = new ArrayList<>();
+    private final Room hub;
     public boolean running = false;
 
-    private ConfigJson config;
+    private final ConfigJson config;
+    private final HttpService httpService;
 
-    public WebsocketService(ConfigJson cfg) {
+    public WebsocketService(ConfigJson cfg, HttpService httpService) {
         super(new InetSocketAddress(cfg.getWebsocketPort()));
         this.config = cfg;
+        this.httpService = httpService;
+        this.hub = new Room("main");
 
     }
 
@@ -40,8 +51,38 @@ public class WebsocketService extends WebSocketServer {
 
     @Override
     public void onMessage(WebSocket webSocket, String msg) {
+        logger.info(webSocket.getProtocol().getProvidedProtocol());
         Global.pluginManager.triggerHook("@onWebsocketMessage");
-        broadcast(msg);
+        JsonObject messageJson = Global.jsonParser.parse(msg).getAsJsonObject();
+
+        String sessionID = webSocket.getProtocol().getProvidedProtocol();
+        Account account = Global.database.getAccountBySession(sessionID);
+
+        if(account == null) {
+            logger.info("account is null. provided: " + sessionID);
+            return;
+        }
+        User user = new User(account, webSocket);
+
+        switch (messageJson.get("type").getAsString().toLowerCase(Locale.ROOT)) {
+            case "create":
+                ROOMS.add(new Room(UUID.randomUUID().toString(), user));
+                break;
+            case "join":
+                String roomID = messageJson.get("room-id").getAsString();
+                for (var room : ROOMS) {
+                    if(room.ID.equals(roomID)) {
+                        room.addUser(user);
+                    }
+                }
+                break;
+            case "message":
+
+            default:
+                logger.info("wrong type: " + messageJson.get("type").getAsString());
+                break;
+        }
+
     }
 
     @Override
@@ -54,10 +95,6 @@ public class WebsocketService extends WebSocketServer {
     public void onError(WebSocket webSocket, Exception e) {
         Global.pluginManager.triggerHook("@onWebsocketError");
         logger.error("error has occurred: " + e.toString());
-
-        if (webSocket == null) {
-
-        }
     }
 
     @Override
