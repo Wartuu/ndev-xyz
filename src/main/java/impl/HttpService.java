@@ -8,7 +8,7 @@ import impl.handler.user.Home;
 import impl.json.ConfigJson;
 import impl.json.VersionJson;
 import impl.database.Database;
-import impl.utils.executor.notesbin.NotesBin;
+import impl.utils.notesbin.NotesBin;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.slf4j.Logger;

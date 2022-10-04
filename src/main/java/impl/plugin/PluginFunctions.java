@@ -8,7 +8,7 @@ import impl.HttpService;
 import impl.WebsocketService;
 import impl.json.ConfigJson;
 import impl.utils.Hardware;
-import impl.utils.HtmlParser;
+import impl.utils.html.HtmlParser;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.slf4j.Logger;

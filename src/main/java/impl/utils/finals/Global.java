@@ -5,7 +5,7 @@ import com.google.gson.JsonParser;
 import impl.database.Database;
 import impl.plugin.PluginManager;
 import impl.utils.IPCollector;
-import impl.utils.executor.notesbin.NotesBin;
+import impl.utils.notesbin.NotesBin;
 
 import java.time.Instant;
 

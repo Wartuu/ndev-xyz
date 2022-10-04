@@ -1,4 +1,4 @@
-package impl.utils.executor.notesbin;
+package impl.utils.notesbin;
 
 public class NotesBinUserJson {
     private NotesBinUser user;

@@ -1,13 +1,14 @@
-package impl.utils;
+package impl.utils.html;
 
 import impl.json.ConfigJson;
+import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class HtmlParser {
@@ -40,5 +41,23 @@ public class HtmlParser {
         html = html.replaceAll(httpTotalRuntime, String.format("%02d:%02d:%02d", HH, MM, SS));
 
         return html;
+    }
+
+    public static String addScriptValues(List<ScriptValue> scriptValues, String html) {
+        StringBuilder scriptBuilder = new StringBuilder();
+        scriptBuilder.append("<script>\n");
+
+        for(var value : scriptValues) {
+            switch (value.type) {
+                case TEXT -> scriptBuilder.append("var ").append(value.key).append(" = \"").append(value.val).append("\";\n");
+                case NUMBER -> scriptBuilder.append("var ").append(value.key).append(" = ").append(value.val).append(";\n");
+            }
+        }
+
+        scriptBuilder.append("</script>");
+
+        return html.replaceAll("@values", scriptBuilder.toString());
+
+
     }
 }

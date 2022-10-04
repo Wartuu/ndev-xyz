@@ -1,4 +1,4 @@
-package impl.utils.executor.notesbin;
+package impl.utils.notesbin;
 
 import impl.utils.finals.Global;
 import okhttp3.*;
