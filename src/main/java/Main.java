@@ -13,9 +13,6 @@ import java.util.TimeZone;
 public class Main {
     protected static final Logger logger = LoggerFactory.getLogger(Main.class);
 
-    public static WebsocketService websocketService = null;
-    public static HttpService httpService = null;
-
     public static void main(String[] args) throws Exception {
 
 
@@ -31,20 +28,20 @@ public class Main {
         ConfigJson configGson = Utils.getConfig(Global.configName);
 
         logger.info("starting http service at port: " + configGson.getHttpPort());
-        Thread httpServiceThread = new Thread(()->{httpService = new HttpService(configGson); httpService.start();});
+        Thread httpServiceThread = new Thread(()->{Global.httpService = new HttpService(configGson); Global.httpService.start();});
         httpServiceThread.setName("http-service-01");
         httpServiceThread.setPriority(Thread.MAX_PRIORITY);
         httpServiceThread.start();
 
         logger.info("starting websocket service at port: " + configGson.getWebsocketPort());
-        Thread websocketServiceThread = new Thread(()->{websocketService = new WebsocketService(configGson, httpService); websocketService.start();});
+        Thread websocketServiceThread = new Thread(()->{Global.websocketService = new WebsocketService(configGson); Global.websocketService.start();});
         websocketServiceThread.setName("websocket-service-01");
         websocketServiceThread.setPriority(Thread.MAX_PRIORITY);
         websocketServiceThread.start();
 
         while (true) {
             try {
-                if(httpService.running && websocketService.running) {
+                if(Global.httpService.running && Global.websocketService.running) {
                     break;
                 }
 
@@ -54,14 +51,14 @@ public class Main {
         }
 
         logger.info("starting plugin manager");
-        Global.pluginManager = new PluginManager(httpService, websocketService);
+        Global.pluginManager = new PluginManager();
         Thread pluginManagerThread = new Thread(Global.pluginManager::hookLoop);
         pluginManagerThread.setName("plugin-manager");
         pluginManagerThread.start();
 
         while (true) {
             try {
-                if(httpService.running && websocketService.running && Global.pluginManager.running) {
+                if(Global.httpService.running && Global.websocketService.running && Global.pluginManager.running) {
                     break;
                 }
                 Thread.sleep(1);

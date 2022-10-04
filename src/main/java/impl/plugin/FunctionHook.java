@@ -7,7 +7,7 @@ public class FunctionHook {
     private String hookName;
     private Callable function;
 
-    public FunctionHook(String hookName, Callable function) {
+    public FunctionHook(String hookName, Callable<Object> function) {
         this.hookName = hookName;
         this.function = function;
     }

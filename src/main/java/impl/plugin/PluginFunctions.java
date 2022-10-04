@@ -19,20 +19,16 @@ import java.util.concurrent.Callable;
 
 public class PluginFunctions {
     private PluginManager pluginManager;
-    private HttpService httpService;
-    private WebsocketService websocketService;
     private ConfigJson config;
     private String rawConfig;
     private JsonObject configObject;
     public Logger logger = LoggerFactory.getLogger(PluginFunctions.class);
 
-    public PluginFunctions(PluginManager pluginManager, HttpService server, WebsocketService websocket) {
+    public PluginFunctions(PluginManager pluginManager) {
         this.pluginManager = pluginManager;
-        this.httpService = server;
         this.config = Utils.getConfig(Global.configName);
         this.rawConfig = Utils.getConfigRaw(Global.configName);
         this.configObject = new JsonParser().parse(rawConfig).getAsJsonObject();
-        this.websocketService = websocket;
     }
 
     public void createHook(String hook, Callable function) {
@@ -40,7 +36,7 @@ public class PluginFunctions {
     }
 
     public void createUri(String path, String content, boolean isLarge, String customHook, String contentType) {
-        httpService.httpServer.createContext(path, new HttpHandler() {
+        Global.httpService.httpServer.createContext(path, new HttpHandler() {
             @Override
             public void handle(HttpExchange exchange) throws IOException {
                 pluginManager.triggerHook(customHook);
@@ -52,7 +48,7 @@ public class PluginFunctions {
     }
 
     public void deleteUri(String path) {
-        httpService.httpServer.removeContext(path);
+        Global.httpService.httpServer.removeContext(path);
     }
 
     public String getFromConfig(String value) {
@@ -72,11 +68,11 @@ public class PluginFunctions {
     }
 
     public void stopHttpServer() {
-        httpService.stop();
+        Global.httpService.stop();
     }
 
     public void startHttpServer() {
-        httpService.httpServer.start();
+        Global.httpService.httpServer.start();
     }
 
 }

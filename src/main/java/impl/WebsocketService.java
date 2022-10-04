@@ -29,12 +29,10 @@ public class WebsocketService extends WebSocketServer {
     public boolean running = false;
 
     private final ConfigJson config;
-    private final HttpService httpService;
 
-    public WebsocketService(ConfigJson cfg, HttpService httpService) {
+    public WebsocketService(ConfigJson cfg) {
         super(new InetSocketAddress(cfg.getWebsocketPort()));
         this.config = cfg;
-        this.httpService = httpService;
         this.hub = new Room("main");
 
     }
@@ -46,7 +44,7 @@ public class WebsocketService extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket webSocket, int code, String reason, boolean remote) {
-        logger.info(webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + " disconnected code:" + code);
+        logger.info(webSocket.getRemoteSocketAddress().getAddress().getHostAddress() + " disconnected, code:" + code);
     }
 
     @Override

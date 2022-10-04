@@ -25,7 +25,7 @@ public class PluginManager {
     public boolean running = false;
 
 
-    public PluginManager(HttpService httpService, WebsocketService websocketService) {
+    public PluginManager() {
         engine = new ScriptEngineManager().getEngineByName("JavaScript");
         invEngine = (Invocable) engine;
 
@@ -33,8 +33,9 @@ public class PluginManager {
             logger.info("no plugins detected");
         }
 
-        engine.put("plugin", new PluginFunctions(this, httpService, websocketService));
+        engine.put("plugin", new PluginFunctions(this));
         engine.put("database", Global.database);
+        engine.put("irc", new PluginIRC(this));
 
 
         for(String pluginFile : Utils.getPlugins()) {
@@ -101,6 +102,20 @@ public class PluginManager {
     }
 
     public void triggerHook(String name) {
+        for (FunctionHook hook : functionHooks) {
+            if(hook.getHookName().equals(name)) {
+                try {
+                    hook.getFunction().call();
+                } catch (Exception e) {
+                    logger.error("---------->" + hook.getHookName() + "<----------");
+                    logger.error(e.getMessage());
+                    logger.error("----------> END OF " + hook.getHookName() + " ERROR LOG <----------");
+                }
+            }
+        }
+    }
+
+    public void triggerHook(String name, Object variable) {
         for (FunctionHook hook : functionHooks) {
             if(hook.getHookName().equals(name)) {
                 try {
