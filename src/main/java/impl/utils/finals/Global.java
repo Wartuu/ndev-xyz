@@ -1,5 +1,9 @@
 package impl.utils.finals;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Metric;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.MetricSet;
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
 import impl.HttpService;
@@ -23,4 +27,6 @@ public class Global {
     public static WebsocketService websocketService;
     public static PluginManager pluginManager;
     public static NotesBin notesBin;
+    public static final MetricRegistry metricRegistry = new MetricRegistry();
+    public static final Meter requestStatistics = metricRegistry.meter("requests");
 }

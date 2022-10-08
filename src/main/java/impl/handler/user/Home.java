@@ -2,11 +2,11 @@ package impl.handler.user;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import impl.utils.finals.Global;
 import impl.utils.html.HtmlParser;
 import impl.utils.Utils;
 import impl.utils.html.ScriptValue;
 import impl.utils.html.ValueType;
-import org.objectweb.asm.tree.analysis.Value;
 
 import java.io.IOException;
 import java.util.ArrayList;

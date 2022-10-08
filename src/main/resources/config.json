@@ -8,9 +8,9 @@
   "server-domain": "localhost",
 
   "http-executor-worker-priority": 10,
-  "http-executor-thread-pool-overrun-size": -1,
-  "http-executor-thread-pool-core-size": -1,
-  "http-executor-thread-pool-max-idle-time": 30,
+  "http-executor-thread-pool-max-size": -1,
+  "http-executor-thread-pool-core-size": 0,
+  "http-executor-thread-pool-max-idle-time": 100000,
 
   "db-url": "jdbc:postgresql://localhost:7005/nekodev",
   "db-username": "postgres",
@@ -23,6 +23,8 @@
   "NotesBin-id": "zGuShUqnKZxVDBTkgEK7rO7qh9U0wQ7X",
   "NotesBin-url": "https://catzone.xyz",
   "NotesBin-auth": "qcIdSHJN35",
-  "NotesBin-support": false
+  "NotesBin-support": true,
+
+  "request-meter-delay": 1
 
 }

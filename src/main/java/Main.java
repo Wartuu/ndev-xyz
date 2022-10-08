@@ -1,3 +1,5 @@
+import com.codahale.metrics.ConsoleReporter;
+import com.codahale.metrics.Slf4jReporter;
 import impl.HttpService;
 import impl.WebsocketService;import impl.json.ConfigJson;
 import impl.plugin.PluginManager;
@@ -9,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
     protected static final Logger logger = LoggerFactory.getLogger(Main.class);
@@ -42,6 +45,13 @@ public class Main {
         while (true) {
             try {
                 if(Global.httpService.running && Global.websocketService.running) {
+                    logger.info("starting request per second counter");
+
+                    Slf4jReporter consoleReporter = Slf4jReporter.forRegistry(Global.metricRegistry)
+                            .convertRatesTo(TimeUnit.MINUTES)
+                            .convertDurationsTo(TimeUnit.SECONDS)
+                            .build();
+                    consoleReporter.start(configGson.getRequestMeterDelay(), TimeUnit.SECONDS);
                     break;
                 }
 

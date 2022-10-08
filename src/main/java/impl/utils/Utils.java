@@ -9,6 +9,7 @@ import impl.database.Account;
 import impl.json.ConfigJson;
 import impl.utils.executor.ExecutorRejectionHandler;
 import impl.utils.executor.ExecutorThreadFactory;
+import impl.utils.executor.ExecutorThreadPool;
 import impl.utils.finals.Global;
 import impl.utils.gzip.Gzip;
 import impl.utils.html.HtmlParser;
@@ -25,6 +26,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -317,29 +319,35 @@ public class Utils {
         ThreadPoolExecutor threadPoolExecutor;
         ConfigJson config = getConfig(Global.configName);
 
-        int executorCoreThreads;
-        int executorOverrunThreads;
-        int executorMaxIdleTime;
+        int coreThreads;
+        int maxThreads;
+        int maxIdleTime;
 
         if(config.getExecutorCoreSize() == -1) {
-            executorCoreThreads = Runtime.getRuntime().availableProcessors();
-        } else {executorCoreThreads = config.getExecutorCoreSize();}
+            coreThreads = Runtime.getRuntime().availableProcessors();
+        } else {coreThreads = config.getExecutorCoreSize();}
 
         if (config.getExecutorOverrunSize() == -1){
-            executorOverrunThreads = Integer.MAX_VALUE - executorCoreThreads;
-        } else {executorOverrunThreads = config.getExecutorOverrunSize();}
+            maxThreads = Integer.MAX_VALUE - coreThreads;
+        } else {maxThreads = config.getExecutorOverrunSize();}
 
-        logger.info("core-executor-threads: " + executorCoreThreads);
-        logger.info("overrun-executor-threads: " + executorOverrunThreads);
-        executorMaxIdleTime = config.getExecutorMaxIdleTime();
+        logger.info("core-executor-threads: " + coreThreads);
+        logger.info("overrun-executor-threads: " + maxThreads);
+        maxIdleTime = config.getExecutorMaxIdleTime();
 
 
 
-        threadPoolExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(executorCoreThreads);
+        threadPoolExecutor = (ThreadPoolExecutor) new ExecutorThreadPool(config, coreThreads, maxThreads);
         threadPoolExecutor.setThreadFactory(new ExecutorThreadFactory(config));
-        threadPoolExecutor.setCorePoolSize(executorCoreThreads);
-        threadPoolExecutor.setMaximumPoolSize(executorOverrunThreads + executorCoreThreads);
-        threadPoolExecutor.setKeepAliveTime(executorMaxIdleTime, TimeUnit.SECONDS);
+        threadPoolExecutor.setCorePoolSize(coreThreads);
+        threadPoolExecutor.setMaximumPoolSize(maxThreads + coreThreads);
+
+        if(maxIdleTime == 0) {
+            threadPoolExecutor.setKeepAliveTime(0, TimeUnit.NANOSECONDS);
+        } else {
+            threadPoolExecutor.setKeepAliveTime(maxIdleTime, TimeUnit.SECONDS);
+        }
+
         threadPoolExecutor.setRejectedExecutionHandler(new ExecutorRejectionHandler());
 
         return threadPoolExecutor;
@@ -360,7 +368,22 @@ public class Utils {
         return staticFiles;
     }
 
-    public static ArrayList<String> getPlugins() {
+    public static ArrayList<String> getPluginsJsList() {
+        ArrayList<String> staticFiles = new ArrayList<>();
+        File directory = new File("plugins");
+        File[] plugins = directory.listFiles();
+        try {
+            for (int i = 0; i<plugins.length;i++) {
+                if (plugins[i].isFile()) {
+                    staticFiles.add(plugins[i].getName());
+                }
+            }
+        } catch (Exception e) {logger.warn(e.toString()); return null;}
+
+        return staticFiles;
+    }
+
+    public static ArrayList<String> getPluginJarList() {
         ArrayList<String> staticFiles = new ArrayList<>();
         File directory = new File("plugins");
         File[] plugins = directory.listFiles();

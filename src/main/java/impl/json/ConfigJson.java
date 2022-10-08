@@ -11,7 +11,7 @@ public class ConfigJson {
     @SerializedName("webrtc-port")
     private int webRtcPort;
 
-    @SerializedName("http-executor-thread-pool-overrun-size")
+    @SerializedName("http-executor-thread-pool-max-size")
     private int executorOverrunSize;
 
     @SerializedName("http-executor-thread-pool-core-size")
@@ -55,6 +55,10 @@ public class ConfigJson {
 
     @SerializedName("NotesBin-support")
     private boolean notesBinSupport;
+
+    @SerializedName("request-meter-delay")
+    private int requestMeterDelay;
+
 
     public int getHttpPort() {
         return httpPort;
@@ -126,5 +130,9 @@ public class ConfigJson {
 
     public boolean isNotesBinSupport() {
         return notesBinSupport;
+    }
+
+    public int getRequestMeterDelay() {
+        return requestMeterDelay;
     }
 }

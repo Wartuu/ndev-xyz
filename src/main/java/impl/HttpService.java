@@ -86,6 +86,7 @@ public class HttpService {
             Utils.loadStaticHandlers(httpServer);
 
             threadPoolExecutor = Utils.getThreadpoolExecutor();
+
             httpServer.setExecutor(threadPoolExecutor);
 
             httpServer.start();

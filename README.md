@@ -3,7 +3,9 @@
 
 ### ImShare (Backend) is using:
 * GSON - Licensed under [Apache License 2.0](https://github.com/google/gson/blob/master/LICENSE)
-* nashorn
+* Jruby
+* GraalVM
+* slf4j
 
 ### ImShare (Frontend) is using:
 * react js library with routing
@@ -13,7 +15,7 @@
 * official release every 0.1 versions
 * sub/fix versions are 0.01
 
-## ImShare - Instalation:
+## ImShare - Installation:
 * download ImShare from releases (newest)
 * move .jar to runtime directory (can be /home/user/desktop/runtime)
 * create Static and Notes folder
@@ -61,6 +63,12 @@ java -jar ImShare-VERSION.jar
 * [X] - Uploading notes/files (protected with password, burn after read etc)
 
 * [X] - GZIP larger static files and etc
+
+* [ ] - javascript plugin support
+
+* [ ] - ruby plugin support
+
+* [ ] - NotesBin support
 
 
 ### Config file - ImShare.json
