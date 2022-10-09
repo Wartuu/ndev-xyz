@@ -9,8 +9,8 @@
 
   "http-executor-worker-priority": 10,
   "http-executor-thread-pool-max-size": -1,
-  "http-executor-thread-pool-core-size": 0,
-  "http-executor-thread-pool-max-idle-time": 100000,
+  "http-executor-thread-pool-core-size": 250,
+  "http-executor-thread-pool-max-idle-time": 30,
 
   "db-url": "jdbc:postgresql://localhost:7005/nekodev",
   "db-username": "postgres",
@@ -25,6 +25,6 @@
   "NotesBin-auth": "qcIdSHJN35",
   "NotesBin-support": true,
 
-  "request-meter-delay": 1
+  "request-meter-delay": 10
 
 }

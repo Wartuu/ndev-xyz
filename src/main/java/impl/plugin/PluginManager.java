@@ -1,32 +1,92 @@
 package impl.plugin;
 
+
+import impl.plugin.pluginlibraries.PluginCore;
+import impl.utils.Utils;
+import org.graalvm.polyglot.Context;
+import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineFactory;
-import javax.script.ScriptEngineManager;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
 
 public class PluginManager {
-    public final Logger logger = LoggerFactory.getLogger(PluginManager.class);
+    private final Logger logger = LoggerFactory.getLogger(PluginManager.class);
     public boolean running = false;
-
+    private boolean noPlugins = false;
+    private final List<Hook> hookList = new ArrayList<>();
+    private final List<Plugin> pluginList;
+    private final Context engine;
+    private final Value bindings;
 
     public PluginManager() {
-        for(var engine : new ScriptEngineManager().getEngineFactories()) {
-            logger.info(engine.getEngineName());
-            logger.info(engine.getEngineVersion());
-            logger.info(engine.getLanguageName());
-            logger.info("---------------------------");
+        this.pluginList = Utils.getPlugins();
+
+
+        if(pluginList == null) {
+            this.noPlugins = true;
+            this.engine = null;
+            this.bindings = null;
+            return;
+        }
+
+        this.engine = Context.newBuilder("js")
+                .allowHostAccess(HostAccess.ALL)
+                .allowHostClassLookup(className -> true)
+                .build();
+
+        this.bindings = engine.getBindings("js");
+        this.bindings.putMember("core", new PluginCore(this));
+
+
+
+
+        for(Plugin plugin : pluginList) {
+            logger.info(plugin.getPluginName());
+            engine.eval("js", plugin.getPluginScript());
+        }
+    }
+
+
+    public void hookLoop() {
+        if(noPlugins){return;}
+        this.running = true;
+
+        for (var hook : hookList) {
+            if(hook.getHookName().equalsIgnoreCase("@init")) {
+                try {
+                    hook.getFunction().call();
+                } catch (Exception e) {logger.error(e.getMessage());}
+            }
+        }
+
+        while (this.running) {
+            for (var hook : hookList) {
+                if(hook.getHookName().equalsIgnoreCase("@update")) {
+                    try {
+                        hook.getFunction().call();
+                    } catch (Exception e) {logger.error(e.getMessage());}
+                }
+            }
         }
 
 
-        this.running = true;
     }
-    public void initPlugins(){}
-    public void hookLoop(){}
-    public void triggerHook(String name) {}
 
+    public void createHook(String hookName, Callable function) {
+        hookList.add(new Hook(hookName, function));
+    }
 
+    public void triggerHook(String hookName) {
+        for (var hook : hookList) {
+            if(hook.getHookName().equalsIgnoreCase(hookName)) {
+                try {
+                    hook.getFunction().call();
+                } catch (Exception e) {logger.error(e.getMessage());}
+            }
+        }
+    }
 }

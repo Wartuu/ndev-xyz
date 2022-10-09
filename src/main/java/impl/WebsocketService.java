@@ -40,6 +40,7 @@ public class WebsocketService extends WebSocketServer {
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
         logger.info("new connection from: " + webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
+
     }
 
     @Override

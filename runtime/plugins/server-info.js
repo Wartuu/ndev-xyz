@@ -1,0 +1,2 @@
+core.createHook("@init", function() {
+});

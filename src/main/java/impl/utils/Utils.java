@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import impl.database.Account;
 import impl.json.ConfigJson;
+import impl.plugin.Plugin;
 import impl.utils.executor.ExecutorRejectionHandler;
 import impl.utils.executor.ExecutorThreadFactory;
 import impl.utils.executor.ExecutorThreadPool;
@@ -141,7 +142,7 @@ public class Utils {
             List<String> lines = Files.readAllLines(Paths.get(path));
 
             for (String line : lines) {
-                builder.append(line);
+                builder.append(line + "\n");
             }
 
             return builder.toString();
@@ -368,35 +369,21 @@ public class Utils {
         return staticFiles;
     }
 
-    public static ArrayList<String> getPluginsJsList() {
-        ArrayList<String> staticFiles = new ArrayList<>();
+    public static List<Plugin> getPlugins() {
+        List<Plugin> plugins = new ArrayList<>();
         File directory = new File("plugins");
-        File[] plugins = directory.listFiles();
+        File[] pluginFiles = directory.listFiles();
         try {
-            for (int i = 0; i<plugins.length;i++) {
-                if (plugins[i].isFile()) {
-                    staticFiles.add(plugins[i].getName());
+            for (var pluginFile : pluginFiles) {
+                if (pluginFile.isFile()) {
+                    plugins.add(new Plugin(pluginFile.getName(), Utils.getFile("plugins/"+pluginFile.getName())));
                 }
             }
         } catch (Exception e) {logger.warn(e.toString()); return null;}
 
-        return staticFiles;
+        return plugins;
     }
 
-    public static ArrayList<String> getPluginJarList() {
-        ArrayList<String> staticFiles = new ArrayList<>();
-        File directory = new File("plugins");
-        File[] plugins = directory.listFiles();
-        try {
-            for (int i = 0; i<plugins.length;i++) {
-                if (plugins[i].isFile()) {
-                    staticFiles.add(plugins[i].getName());
-                }
-            }
-        } catch (Exception e) {logger.warn(e.toString()); return null;};
-
-        return staticFiles;
-    }
 
     public static boolean doesSupportGzip(HttpExchange exchange) {
         List<String> encodings = exchange.getRequestHeaders().get("Accept-Encoding");
@@ -416,7 +403,6 @@ public class Utils {
 
         for (String file : Utils.getStaticFiles()) {
             String ext = file.substring(file.lastIndexOf('.'));
-            ext = ext.substring(1);
             boolean isAdminOnly = file.toLowerCase(Locale.ROOT).contains("admin");
             String path = "/static/" +ext+"/"+file;
             String content = Utils.getFile("static/" + file);

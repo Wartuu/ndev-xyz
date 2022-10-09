@@ -57,12 +57,6 @@
             <version>42.5.0</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.jruby/jruby-complete -->
-        <dependency>
-            <groupId>org.jruby</groupId>
-            <artifactId>jruby-complete</artifactId>
-            <version>9.3.8.0</version>
-        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.graalvm.js/js -->
         <dependency>
@@ -84,12 +78,6 @@
             <artifactId>metrics-core</artifactId>
             <version>4.2.12</version>
         </dependency>
-
-
-
-
-
-
 
     </dependencies>
 

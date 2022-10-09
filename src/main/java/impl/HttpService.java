@@ -59,6 +59,7 @@ public class HttpService {
 
             logger.info("creating context");
             httpServer = HttpServer.create(new InetSocketAddress(config.getHttpPort()), 0);
+            httpServer.setExecutor(Utils.getThreadpoolExecutor());
 
             //api
 
@@ -84,10 +85,6 @@ public class HttpService {
 
             logger.info("loading static uri...");
             Utils.loadStaticHandlers(httpServer);
-
-            threadPoolExecutor = Utils.getThreadpoolExecutor();
-
-            httpServer.setExecutor(threadPoolExecutor);
 
             httpServer.start();
             logger.info("Running at http://127.0.0.1:" + config.getHttpPort() + "/");

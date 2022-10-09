@@ -49,7 +49,7 @@ public class Main {
 
                     Slf4jReporter consoleReporter = Slf4jReporter.forRegistry(Global.metricRegistry)
                             .convertRatesTo(TimeUnit.MINUTES)
-                            .convertDurationsTo(TimeUnit.SECONDS)
+                            .convertDurationsTo(TimeUnit.MILLISECONDS)
                             .build();
                     consoleReporter.start(configGson.getRequestMeterDelay(), TimeUnit.SECONDS);
                     break;
