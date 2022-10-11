@@ -1,7 +1,7 @@
 package impl.plugin;
 
 
-import impl.plugin.pluginlibraries.PluginCore;
+import impl.plugin.pluginlibraries.*;
 import impl.utils.Utils;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
@@ -25,7 +25,6 @@ public class PluginManager {
     public PluginManager() {
         this.pluginList = Utils.getPlugins();
 
-
         if(pluginList == null) {
             this.noPlugins = true;
             this.engine = null;
@@ -40,7 +39,11 @@ public class PluginManager {
 
         this.bindings = engine.getBindings("js");
         this.bindings.putMember("core", new PluginCore(this));
-
+        this.bindings.putMember("config", new PluginConfig());
+        this.bindings.putMember("http", new PluginHTTP(this));
+        this.bindings.putMember("websocket", new PluginWS());
+        this.bindings.putMember("database", new PluginDatabase());
+        this.bindings.putMember("gzip", new PluginGZIP());
 
 
 
@@ -88,5 +91,13 @@ public class PluginManager {
                 } catch (Exception e) {logger.error(e.getMessage());}
             }
         }
+    }
+
+    public void addToEngine(String name, Object val) {
+        this.bindings.putMember(name, val);
+    }
+
+    public void removeFromEngine(String name) {
+        this.bindings.putMember(name, null);
     }
 }

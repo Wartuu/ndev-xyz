@@ -21,10 +21,10 @@
   "main-version": "0.1",
 
   "NotesBin-id": "zGuShUqnKZxVDBTkgEK7rO7qh9U0wQ7X",
-  "NotesBin-url": "https://catzone.xyz",
+  "NotesBin-url": "https://notesbin.catzone.xyz",
   "NotesBin-auth": "qcIdSHJN35",
   "NotesBin-support": true,
 
-  "request-meter-delay": 10
+  "request-meter-delay": 86400
 
 }

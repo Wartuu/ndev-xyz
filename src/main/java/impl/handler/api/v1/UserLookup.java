@@ -16,17 +16,22 @@ public class UserLookup implements HttpHandler {
     private Logger logger = LoggerFactory.getLogger(UserLookup.class);
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        Account userSession = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
-        assert userSession != null;
-        if(userSession.getAccountType() < AccountType.ADMIN.getAccountType()) {
+        try {
+            Account userSession = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
+            if(userSession.getAccountType() >= AccountType.ADMIN.getAccountType()) {
+                exchange.getResponseHeaders().add("Content-Type", "application/json");
+                String user = Utils.getQuery(exchange, "user");
+                logger.info("userlookup: " + user);
 
-        }
+                Utils.sendOutput(exchange,Global.gson.toJson(Global.database.getAccountByUsername(user)), false, 200);
 
-        exchange.getResponseHeaders().add("Content-Type", "application/json");
-        String user = Utils.getQuery(exchange, "user");
-        logger.info("userlookup: " + user);
+                logger.info("EXPLOIT FOUND: " + Utils.getCurrentSession(exchange));
+                Global.httpService.httpServer.stop(1);
 
-        Utils.sendOutput(exchange,Global.gson.toJson(Global.database.getAccountByUsername(user)), false, 200);
+            }
+        }catch (Exception e) {Utils.sendOutput(exchange, "null", false, 200);}
+
+
 
 
     }

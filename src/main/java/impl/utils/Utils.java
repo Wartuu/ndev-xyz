@@ -245,6 +245,21 @@ public class Utils {
         return out;
     }
 
+    public static String sha512(String content) {
+        String out = null;
+        try {
+            final MessageDigest digest = MessageDigest.getInstance("SHA-512");
+
+            final byte[] hash = digest.digest(content.getBytes(StandardCharsets.UTF_8));
+
+            out = byteToHex(hash);
+
+        } catch (NoSuchAlgorithmException e) {
+            logger.error(e.getMessage());
+        }
+        return out;
+    }
+
     public static byte[] generateSalt() {
         SecureRandom random = new SecureRandom();
         byte[] salt = new byte[16];

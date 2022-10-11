@@ -226,9 +226,14 @@ public class Database {
 
 
     public RegisterJson createNewAccount(HttpExchange exchange, String username, String password, int accountType) {
-        if(!isConnected()) {return null;}
-
         RegisterJson registerJson = new RegisterJson();
+
+        if(!isConnected()) {
+            registerJson.setReason("server is offline");
+            registerJson.setSuccess(false);
+            return registerJson;
+        }
+
 
         try {
 
@@ -251,7 +256,7 @@ public class Database {
             }
             if(findSpecialCharacter(username)) {registerJson.setSuccess(false); registerJson.setReason("illegal character in username"); return registerJson;}
 
-            String checkUsernameSql = "select * from account where UPPER(?) = UPPER(?)";
+            String checkUsernameSql = "select * from account where UPPER(?) = UPPER(username)";
             String newAccountSql = "insert into account (username, password, account_created, last_ip, last_login, account_type, chat_access, auth_token, session_token)" +
                     " values (?, ?, now(), ?, now(), ?, ?, ?, ?)";
 
@@ -260,6 +265,9 @@ public class Database {
             String session = random.ints(97,123).limit(128).collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append).toString();
 
             PreparedStatement preparedStatement = connection.prepareStatement(checkUsernameSql);
+
+            preparedStatement.setString(1, username);
+
             ResultSet usernameExistsRs = preparedStatement.executeQuery();
 
             if(usernameExistsRs.next()) {
@@ -281,9 +289,7 @@ public class Database {
             password = Utils.sha512(password, salt);
             password = Utils.byteToHex(salt) + ":" + password;
 
-            logger.debug(String.valueOf(password.length()));
-
-            preparedStatement = connection.prepareStatement(checkUsernameSql);
+            preparedStatement = connection.prepareStatement(newAccountSql);
 
             preparedStatement.setString(1, username);
             preparedStatement.setString(2, password);
@@ -293,15 +299,19 @@ public class Database {
             preparedStatement.setString(6, auth);
             preparedStatement.setString(7, session);
 
-            preparedStatement.executeQuery();
 
-            registerJson.setReason("");
+            preparedStatement.executeUpdate();
+
+
+
+
+            registerJson.setReason("created account");
             registerJson.setSuccess(true);
             registerJson.setAuthToken(auth);
             registerJson.setSessionToken(session);
             return registerJson;
 
-        } catch (SQLException e) {logger.error(e.getMessage()); registerJson.setSuccess(false); registerJson.setReason("database error try again later"); return registerJson;}
+        } catch (Exception e) {e.printStackTrace(); registerJson.setSuccess(false); registerJson.setReason("database error try again later"); return registerJson;}
     }
 
 
