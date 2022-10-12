@@ -56,15 +56,9 @@ public class NotesBin {
             String responseString;
 
             Request request;
-            if(notesBinMapping.getUserOAuthGetUserInfo() == null) {
-                request = new Request.Builder()
-                        .url(url + "/api/v2/oAuthGetUserInfo" + "?token=" + token).build();
-
-            } else {
-                request = new Request.Builder()
-                        .url(url + notesBinMapping.getUserOAuthGetUserInfo() + "?token=" + token).build();
-
-            }
+            request = new Request.Builder()
+                    .url(url + "/api/v2/oAuthGetUserInfo" + "?token=" + token)
+                    .build();
 
             Call call = httpClient.newCall(request);
 
@@ -78,6 +72,7 @@ public class NotesBin {
 
          return null;
     }
+
 
 
 }

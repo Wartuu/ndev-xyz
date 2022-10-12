@@ -11,6 +11,6 @@ public class ServerRuntime implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        Utils.sendOutput(exchange, HtmlParser.parse("@main.runtime"), false, 200);
+        Utils.sendOutput(exchange, HtmlParser.parseStatic("@main.runtime"), false, 200);
     }
 }

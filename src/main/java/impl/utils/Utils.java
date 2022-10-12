@@ -26,8 +26,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -433,7 +431,7 @@ public class Utils {
                     if(isAdminOnly) {
                         Account account = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
                         if(account == null) {
-                            Utils.sendOutput(exchange, HtmlParser.parse(Utils.getFile("html/404.html")), false, 200);
+                            Utils.sendOutput(exchange, HtmlParser.parseStatic(Utils.getFile("html/404.html")), false, 200);
                             return;
                         } else {
                             if(account.getAccountType() < AccountType.ADMIN.getAccountType()) {
@@ -443,7 +441,6 @@ public class Utils {
 
 
                     }
-                    logger.info(String.valueOf(access));
 
                     if(access) {
                         if(doesSupportGzip(exchange)) {
@@ -459,7 +456,7 @@ public class Utils {
                             Utils.sendOutput(exchange, content, false, 200);
                         }
                     } else {
-                        Utils.sendOutput(exchange, HtmlParser.parse(Utils.getFile("html/404.html")), false, 200);
+                        Utils.sendOutput(exchange, HtmlParser.parseStatic(Utils.getFile("html/404.html")), false, 200);
                     }
 
                 });
@@ -471,7 +468,7 @@ public class Utils {
                     if(isAdminOnly) {
                         Account account = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
                         if(account == null) {
-                            Utils.sendOutput(exchange, HtmlParser.parse(Utils.getFile("html/404.html")), false, 200);
+                            Utils.sendOutput(exchange, HtmlParser.parseStatic(Utils.getFile("html/404.html")), false, 200);
                             return;
                         } else {
                             if(account.getAccountType() < AccountType.ADMIN.getAccountType()) {
@@ -481,14 +478,13 @@ public class Utils {
 
 
                     }
-                    logger.info(String.valueOf(access));
 
                     if(access) {
                         exchange.getResponseHeaders().add("Content-Type", mimeType);
                         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
                         Utils.sendOutput(exchange, content, false, 200);
                     } else {
-                        Utils.sendOutput(exchange, HtmlParser.parse(Utils.getFile("html/404.html")), false, 200);
+                        Utils.sendOutput(exchange, HtmlParser.parseStatic(Utils.getFile("html/404.html")), false, 200);
                     }
 
                 });

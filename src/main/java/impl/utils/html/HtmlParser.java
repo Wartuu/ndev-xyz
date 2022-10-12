@@ -1,5 +1,6 @@
 package impl.utils.html;
 
+import com.sun.net.httpserver.HttpExchange;
 import impl.json.ConfigJson;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
@@ -20,10 +21,11 @@ public class HtmlParser {
     private static final String configFrontendVersion = "@config.version.frontend";
     private static final String configBackendVersion = "@config.version.backend";
     private static final String httpTotalRuntime = "@main.runtime";
+    private static final String currentUser = "@user";
 
     private static Logger logger = LoggerFactory.getLogger(HtmlParser.class);
 
-    public static String parse(String html) {
+    public static String parseStatic(String html) {
         ConfigJson config = Utils.getConfig(Global.configName);
 
         html = html.replaceAll(configDomain, config.getServerDomain());
@@ -32,6 +34,7 @@ public class HtmlParser {
         html = html.replaceAll(configMainVersion, config.getMainVersion());
         html = html.replaceAll(configBackendVersion, config.getBackendVersion());
         html = html.replaceAll(configFrontendVersion, config.getFrontendVersion());
+
         long time = Duration.between(Global.startTime, Instant.now()).toMillis();
 
         long HH = TimeUnit.MILLISECONDS.toHours(time);
@@ -39,6 +42,13 @@ public class HtmlParser {
         long SS = TimeUnit.MILLISECONDS.toSeconds(time) % 60;
 
         html = html.replaceAll(httpTotalRuntime, String.format("%02d:%02d:%02d", HH, MM, SS));
+
+        return html;
+    }
+
+    public static String parseDynamic(String html, HttpExchange exchange) {
+        html = html.replaceAll(currentUser, Global.database.getAccountBySession(Utils.getCurrentSession(exchange)).getUsername());
+
 
         return html;
     }

@@ -3,6 +3,7 @@ package impl.plugin;
 
 import impl.plugin.pluginlibraries.*;
 import impl.utils.Utils;
+import impl.utils.finals.Global;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
 import org.graalvm.polyglot.Value;
@@ -38,13 +39,7 @@ public class PluginManager {
                 .build();
 
         this.bindings = engine.getBindings("js");
-        this.bindings.putMember("core", new PluginCore(this));
-        this.bindings.putMember("config", new PluginConfig());
-        this.bindings.putMember("http", new PluginHTTP(this));
-        this.bindings.putMember("websocket", new PluginWS());
-        this.bindings.putMember("database", new PluginDatabase());
-        this.bindings.putMember("gzip", new PluginGZIP());
-
+        this.bindings.putMember("NotesBin", Global.notesBin);
 
 
         for(Plugin plugin : pluginList) {

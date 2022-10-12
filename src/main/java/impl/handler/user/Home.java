@@ -2,7 +2,6 @@ package impl.handler.user;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import impl.utils.finals.Global;
 import impl.utils.html.HtmlParser;
 import impl.utils.Utils;
 import impl.utils.html.ScriptValue;
@@ -22,7 +21,7 @@ public class Home implements HttpHandler {
         scriptValues.add(new ScriptValue("test2", "2", ValueType.NUMBER));
 
         file = HtmlParser.addScriptValues(scriptValues, file);
-        this.content = HtmlParser.parse(file);
+        this.content = HtmlParser.parseStatic(file);
     }
 
     @Override

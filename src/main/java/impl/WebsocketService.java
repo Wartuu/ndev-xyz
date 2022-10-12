@@ -76,6 +76,9 @@ public class WebsocketService extends WebSocketServer {
                 }
                 break;
             case "message":
+                for (var room : ROOMS) {
+                }
+
 
             default:
                 logger.info("wrong type: " + messageJson.get("type").getAsString());

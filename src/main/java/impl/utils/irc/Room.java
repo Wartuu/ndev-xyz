@@ -37,6 +37,8 @@ public class Room {
         for(var user : users) {
             if(user.webSocket != null) {
                 user.webSocket.send(msg);
+            } else {
+                users.remove(user);
             }
         }
     }
@@ -48,6 +50,16 @@ public class Room {
 
     public void addUser(User user) {
         users.add(user);
+    }
+
+    public boolean containsWebsocket(WebSocket webSocket) {
+        for (var user : users) {
+            if(user.webSocket.equals(webSocket)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 

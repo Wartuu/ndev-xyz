@@ -19,6 +19,6 @@ public class NotFound implements HttpHandler {
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         Global.requestStatistics.mark();
-        Utils.sendOutput(exchange, HtmlParser.parse(Utils.getFile("html/404.html")), false, 200);
+        Utils.sendOutput(exchange, HtmlParser.parseStatic(Utils.getFile("html/404.html")), false, 200);
     }
 }
