@@ -70,4 +70,19 @@ public class HtmlParser {
 
 
     }
+
+    public static String addScriptValue(ScriptValue scriptValue, String html) {
+        StringBuilder scriptBuilder = new StringBuilder();
+        scriptBuilder.append("<script>\n");
+        switch (scriptValue.type) {
+            case TEXT -> scriptBuilder.append("var ").append(scriptValue.key).append(" = \"").append(scriptValue.val).append("\";\n");
+            case NUMBER -> scriptBuilder.append("var ").append(scriptValue.key).append(" = ").append(scriptValue.val).append(";\n");
+        }
+
+        scriptBuilder.append("</script>");
+
+        return html.replaceAll("@values", scriptBuilder.toString());
+
+
+    }
 }

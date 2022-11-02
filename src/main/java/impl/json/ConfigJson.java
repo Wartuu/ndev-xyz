@@ -8,9 +8,6 @@ public class ConfigJson {
     @SerializedName("ws-port")
     private int websocketPort;
 
-    @SerializedName("webrtc-port")
-    private int webRtcPort;
-
     @SerializedName("http-executor-thread-pool-max-size")
     private int executorOverrunSize;
 
@@ -28,6 +25,9 @@ public class ConfigJson {
 
     @SerializedName("db-password")
     private String databasePassword;
+
+    @SerializedName("graalvm-logfile")
+    private String graalvmLogFile;
 
     @SerializedName("backend-version")
     private String backendVersion;
@@ -58,6 +58,24 @@ public class ConfigJson {
 
     @SerializedName("request-meter-delay")
     private int requestMeterDelay;
+
+    @SerializedName("mail-host")
+    private String mailHost;
+
+    @SerializedName("mail-port")
+    private int mailPort;
+
+    @SerializedName("mail-username")
+    private String mailUsername;
+
+    @SerializedName("mail-password")
+    private String mailPassword;
+
+    @SerializedName("mail-auth")
+    private boolean mailAuth;
+
+    @SerializedName("mail-tls")
+    private boolean mailTls;
 
 
     public int getHttpPort() {
@@ -112,9 +130,6 @@ public class ConfigJson {
         return serverDomain;
     }
 
-    public int getWebRtcPort() {
-        return webRtcPort;
-    }
 
     public String getNotesBinId() {
         return notesBinId;
@@ -134,5 +149,33 @@ public class ConfigJson {
 
     public int getRequestMeterDelay() {
         return requestMeterDelay;
+    }
+
+    public String getMailHost() {
+        return mailHost;
+    }
+
+    public int getMailPort() {
+        return mailPort;
+    }
+
+    public String getMailUsername() {
+        return mailUsername;
+    }
+
+    public String getMailPassword() {
+        return mailPassword;
+    }
+
+    public boolean isMailAuth() {
+        return mailAuth;
+    }
+
+    public boolean isMailTls() {
+        return mailTls;
+    }
+
+    public String getGraalvmLogFile() {
+        return graalvmLogFile;
     }
 }

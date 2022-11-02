@@ -50,6 +50,9 @@ public class HttpService {
             Global.database = new Database(config);
             Global.database.connect();
 
+            Global.mailService = new MailClient(config);
+            Global.mailService.connect();
+
             if (config.isNotesBinSupport()) {
                 Global.notesBin = new NotesBin(config.getNotesBinUrl(), config.getNotesBinId(), config.getNotesBinAuth());
             }

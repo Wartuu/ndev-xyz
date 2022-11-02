@@ -1,7 +1,7 @@
 package impl.plugin;
 
 
-import impl.plugin.pluginlibraries.*;
+import impl.json.ConfigJson;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.graalvm.polyglot.Context;
@@ -10,9 +10,13 @@ import org.graalvm.polyglot.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.logging.FileHandler;
 
 public class PluginManager {
     private final Logger logger = LoggerFactory.getLogger(PluginManager.class);
@@ -22,9 +26,12 @@ public class PluginManager {
     private final List<Plugin> pluginList;
     private final Context engine;
     private final Value bindings;
+    private final ConfigJson config;
+    private FileHandler logFile = null;
 
-    public PluginManager() {
+    public PluginManager(ConfigJson config) {
         this.pluginList = Utils.getPlugins();
+        this.config = config;
 
         if(pluginList == null) {
             this.noPlugins = true;
@@ -33,19 +40,20 @@ public class PluginManager {
             return;
         }
 
+        try {
+            this.logFile = new FileHandler(config.getGraalvmLogFile());
+        } catch (Exception e) {logger.error(e.getMessage());}
+
+
+
         this.engine = Context.newBuilder("js")
                 .allowHostAccess(HostAccess.ALL)
                 .allowHostClassLookup(className -> true)
+                .logHandler(this.logFile)
                 .build();
 
         this.bindings = engine.getBindings("js");
         this.bindings.putMember("NotesBin", Global.notesBin);
-
-
-        for(Plugin plugin : pluginList) {
-            logger.info(plugin.getPluginName());
-            engine.eval("js", plugin.getPluginScript());
-        }
     }
 
 

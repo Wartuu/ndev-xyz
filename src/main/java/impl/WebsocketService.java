@@ -15,12 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.xml.crypto.Data;
+import java.net.HttpCookie;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.UUID;
+import java.rmi.server.UID;
+import java.util.*;
 
 public class WebsocketService extends WebSocketServer {
     private static final Logger logger = LoggerFactory.getLogger(WebsocketService.class);
@@ -33,13 +32,58 @@ public class WebsocketService extends WebSocketServer {
     public WebsocketService(ConfigJson cfg) {
         super(new InetSocketAddress(cfg.getWebsocketPort()));
         this.config = cfg;
-        this.hub = new Room("main");
-
+        this.hub = new Room("main", true);
     }
 
     @Override
     public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
         logger.info("new connection from: " + webSocket.getRemoteSocketAddress().getAddress().getHostAddress());
+
+        List<HttpCookie> cookies = HttpCookie.parse(clientHandshake.getFieldValue("Cookie"));
+        Account account = null;
+
+
+
+        boolean inCustomChannel = false;
+
+        for (var cookie : cookies) {
+            if(cookie.getName().equalsIgnoreCase("session-token")) {
+                account = Global.database.getAccountBySession(cookie.getValue());
+            }
+        }
+
+
+        if(account == null){
+            webSocket.close();
+            return;
+        }
+
+        for(var room : ROOMS) {
+            if(room.containsAccount(account)) {
+                inCustomChannel = true;
+                room.updateUserWebsocket(account, webSocket);
+            }
+        }
+
+
+        if(!inCustomChannel) {
+            for (var user : hub.users) {
+                if(user.account.getAuthToken().equals(account.getAuthToken())) {
+                    hub.addUser(user);
+                }
+            }
+        }
+
+
+
+
+
+        for (var room : ROOMS) {
+            if(room.containsAccount(account)) {
+                room.updateUserWebsocket(account, webSocket);
+                break;
+            }
+        }
 
     }
 
@@ -52,20 +96,22 @@ public class WebsocketService extends WebSocketServer {
     public void onMessage(WebSocket webSocket, String msg) {
         logger.info(webSocket.getProtocol().getProvidedProtocol());
         Global.pluginManager.triggerHook("@onWebsocketMessage");
+
+        if(msg.length() > 1000) {return;}
+
+        logger.info(msg);
         JsonObject messageJson = Global.jsonParser.parse(msg).getAsJsonObject();
 
-        String sessionID = webSocket.getProtocol().getProvidedProtocol();
-        Account account = Global.database.getAccountBySession(sessionID);
 
-        if(account == null) {
-            logger.info("account is null. provided: " + sessionID);
-            return;
-        }
-        User user = new User(account, webSocket);
+        User user = new User(Global.database.getAccountBySession(messageJson.get("session").getAsString()), webSocket);
 
         switch (messageJson.get("type").getAsString().toLowerCase(Locale.ROOT)) {
             case "create":
-                ROOMS.add(new Room(UUID.randomUUID().toString(), user));
+                String uuid = UUID.randomUUID().toString();
+                ROOMS.add(new Room(uuid, user, false));
+                user.webSocket.send(uuid);
+                logger.info("created room");
+                logger.info(uuid);
                 break;
             case "join":
                 String roomID = messageJson.get("room-id").getAsString();
@@ -76,12 +122,42 @@ public class WebsocketService extends WebSocketServer {
                 }
                 break;
             case "message":
-                for (var room : ROOMS) {
-                }
+                boolean inCustomChannel = false;
+                if(user.account != null) {
+                    if(user.account.getChatAccess()) {
+                        for (var room : ROOMS) {
+                            if(room.containsAccount(user.account)) {
+                                inCustomChannel = true;
+                                room.broadcast(msg);
+                                break;
+                            }
+                        }
+                        if(!inCustomChannel) {
+                            hub.broadcast(msg);
 
+                        }
+                    }
+                }
+                break;
+            case "command":
+                List<String> command = Arrays.stream(messageJson.get("message").getAsString().split(" ")).toList();
+
+                break;
 
             default:
-                logger.info("wrong type: " + messageJson.get("type").getAsString());
+                logger.info("wrong type! passing to room (if connected to one): " + messageJson.get("type").getAsString());
+
+                if(user.account != null) {
+                    if(user.account.getChatAccess()) {
+                        for (var room : ROOMS) {
+                            if(room.containsAccount(user.account)) {
+                                room.broadcast(msg);
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 break;
         }
 

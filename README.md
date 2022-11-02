@@ -1,15 +1,13 @@
 # ImShare/nekodev.xyz - Java http/websocket server
-# This repository is copy of old ImShare repository (around 100 commits)
+# This repository is copy of old ImShare repository (around 200 commits)
 
 ### ImShare (Backend) is using:
 * GSON - Licensed under [Apache License 2.0](https://github.com/google/gson/blob/master/LICENSE)
-* Jruby
 * GraalVM
 * slf4j
 
 ### ImShare (Frontend) is using:
-* react js library with routing
-
+- based vanilla html
 
 ## current version is 0.6-SNAPSHOT
 * official release every 0.1 versions

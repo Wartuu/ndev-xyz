@@ -3,7 +3,6 @@
 
   "http-port": 7001,
   "ws-port": 7002,
-  "webrtc-port": 7003,
 
   "server-domain": "localhost",
 
@@ -16,6 +15,8 @@
   "db-username": "postgres",
   "db-password": "chi210",
 
+  "graalvm-logfile": "graalvm-log.txt",
+
   "backend-version": "0.1",
   "frontend-version": "0.0",
   "main-version": "0.1",
@@ -25,6 +26,13 @@
   "NotesBin-auth": "qcIdSHJN35",
   "NotesBin-support": true,
 
-  "request-meter-delay": 86400
+  "request-meter-delay": 86400,
+
+  "mail-host": "x",
+  "mail-port": 0,
+  "mail-username": "x",
+  "mail-password": "x",
+  "mail-auth": true,
+  "mail-tls": true
 
 }
