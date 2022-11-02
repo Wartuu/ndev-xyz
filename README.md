@@ -2,9 +2,16 @@
 # This repository is copy of old ImShare repository (around 200 commits)
 
 ### ImShare (Backend) is using:
-* GSON - Licensed under [Apache License 2.0](https://github.com/google/gson/blob/master/LICENSE)
-* GraalVM
-* slf4j
+* GSON               - Licensed under [Apache License 2.0](https://github.com/google/gson/blob/master/LICENSE)
+* GraalVM            - Licensed under [GNU General Public License](https://github.com/oracle/graal/blob/master/LICENSE)
+* slf4j              - Licensed under [Apache License 2.0](https://github.com/qos-ch/slf4j/blob/master/jcl-over-slf4j/LICENSE.txt)
+* FreeMarker         - Licensed under [Apache License 2.0](https://freemarker.apache.org/docs/app_license.html)
+* Jakrata Mail       - Licensed under [CDDL 1.1](https://javaee.github.io/javamail/LICENSE)
+* JSON               - Licensed under [LICENSE](http://www.json.org/license.html)
+* OkHTTP             - Licensed under [Apache License 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)
+* java-websocket     - Licensed under [MIT License](https://github.com/TooTallNate/Java-WebSocket/blob/master/LICENSE)
+* jdbc-postgresql    - Licensed under [BSD 2-Clause License](https://jdbc.postgresql.org/license/)
+* dropwizard-metrics - Licensed under [Apache License 2.0](https://github.com/dropwizard/metrics/blob/release/4.2.x/LICENSE)
 
 ### ImShare (Frontend) is using:
 - based vanilla html
