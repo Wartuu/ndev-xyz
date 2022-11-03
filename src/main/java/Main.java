@@ -8,7 +8,10 @@ import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.Thymeleaf;
 
+import java.io.File;
+import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -19,12 +22,15 @@ public class Main {
 
     public static void main(String[] args) throws Exception
     {
+
+
         if(System.getProperty("user.name").equalsIgnoreCase("admin") || System.getProperty("user.name").equalsIgnoreCase("root")) {
             for (int i = 3; i > 0; i--) {
                 logger.warn("YOU ARE TRYING TO RUN NEKODEV AS ROOT/ADMIN PLEASE WAIT " + i + " SECONDS");
                 Thread.sleep(10000/3);
             }
         }
+
 
 
         long startTime = System.nanoTime();

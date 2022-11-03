@@ -13,7 +13,6 @@ import impl.utils.executor.ExecutorThreadFactory;
 import impl.utils.executor.ExecutorThreadPool;
 import impl.utils.finals.Global;
 import impl.utils.gzip.Gzip;
-import impl.utils.html.HtmlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -431,7 +430,7 @@ public class Utils {
                     if(isAdminOnly) {
                         Account account = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
                         if(account == null) {
-                            Utils.sendOutput(exchange, HtmlParser.parseStatic(Utils.getFile("html/404.html")), false, 200);
+                            Utils.sendOutput(exchange, Global.templateUtils.processDefault("404"), false, 200);
                             return;
                         } else {
                             if(account.getAccountType() < AccountType.ADMIN.getAccountType()) {
@@ -456,7 +455,7 @@ public class Utils {
                             Utils.sendOutput(exchange, content, false, 200);
                         }
                     } else {
-                        Utils.sendOutput(exchange, HtmlParser.parseStatic(Utils.getFile("html/404.html")), false, 200);
+                        Utils.sendOutput(exchange, Global.templateUtils.processDefault("404"), false, 200);
                     }
 
                 });
@@ -468,7 +467,7 @@ public class Utils {
                     if(isAdminOnly) {
                         Account account = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
                         if(account == null) {
-                            Utils.sendOutput(exchange, HtmlParser.parseStatic(Utils.getFile("html/404.html")), false, 200);
+                            Utils.sendOutput(exchange, Global.templateUtils.processDefault("404"), false, 200);
                             return;
                         } else {
                             if(account.getAccountType() < AccountType.ADMIN.getAccountType()) {
@@ -484,9 +483,8 @@ public class Utils {
                         exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
                         Utils.sendOutput(exchange, content, false, 200);
                     } else {
-                        Utils.sendOutput(exchange, HtmlParser.parseStatic(Utils.getFile("html/404.html")), false, 200);
+                        Utils.sendOutput(exchange, Global.templateUtils.processDefault("404"), false, 200);
                     }
-
                 });
             }
         }

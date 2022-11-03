@@ -9,6 +9,7 @@ import impl.MailClient;
 import impl.WebsocketService;
 import impl.database.Database;
 import impl.plugin.PluginManager;
+import impl.utils.template.TemplateUtils;
 import impl.utils.notesbin.NotesBin;
 
 import java.time.Instant;
@@ -30,4 +31,5 @@ public class Global {
     public static final Meter requestStatistics = metricRegistry.meter("requests");
     public static MailClient mailService;
 
+    public static TemplateUtils templateUtils;
 }

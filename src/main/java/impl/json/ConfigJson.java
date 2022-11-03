@@ -77,7 +77,6 @@ public class ConfigJson {
     @SerializedName("mail-tls")
     private boolean mailTls;
 
-
     public int getHttpPort() {
         return httpPort;
     }
@@ -178,4 +177,5 @@ public class ConfigJson {
     public String getGraalvmLogFile() {
         return graalvmLogFile;
     }
+
 }

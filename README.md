@@ -5,7 +5,7 @@
 * GSON               - Licensed under [Apache License 2.0](https://github.com/google/gson/blob/master/LICENSE)
 * GraalVM            - Licensed under [GNU General Public License](https://github.com/oracle/graal/blob/master/LICENSE)
 * slf4j              - Licensed under [Apache License 2.0](https://github.com/qos-ch/slf4j/blob/master/jcl-over-slf4j/LICENSE.txt)
-* FreeMarker         - Licensed under [Apache License 2.0](https://freemarker.apache.org/docs/app_license.html)
+* Thymeleaf          - Licensed under [Apache License 2.0](https://github.com/thymeleaf/thymeleaf/blob/3.1-master/LICENSE.txt)
 * Jakrata Mail       - Licensed under [CDDL 1.1](https://javaee.github.io/javamail/LICENSE)
 * JSON               - Licensed under [LICENSE](http://www.json.org/license.html)
 * OkHTTP             - Licensed under [Apache License 2.0](https://github.com/square/okhttp/blob/master/LICENSE.txt)

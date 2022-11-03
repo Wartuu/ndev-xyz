@@ -11,8 +11,13 @@ import impl.database.Database;
 import impl.utils.notesbin.NotesBin;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
+import impl.utils.template.TemplateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.Thymeleaf;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -47,6 +52,12 @@ public class HttpService {
 
     public void start() {
         try{
+
+            logger.info("using template thymeleaf version: " + Thymeleaf.getVersion());
+            logger.info("thymeleaf stable: " + Thymeleaf.isVersionStableRelease());
+            Global.templateUtils = new TemplateUtils(config);
+
+
             Global.database = new Database(config);
             Global.database.connect();
 

@@ -4,12 +4,10 @@ import com.sun.net.httpserver.HttpExchange;
 import impl.database.Account;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
-import impl.utils.html.HtmlParser;
-import impl.utils.html.ScriptValue;
-import impl.utils.html.ValueType;
 import org.java_websocket.WebSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.thymeleaf.context.Context;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +17,7 @@ public class Room {
     public final String ID;
 
     public final List<User> users = new ArrayList<>();
-    private final String roomPage;
+
     public boolean isPrivate;
 
 
@@ -29,11 +27,11 @@ public class Room {
 
         logger.info("owner: " + owner.account.getUsername());
 
-        String page = Utils.getFile("html/room.html");
-        page = HtmlParser.parseStatic(page);
-        page = HtmlParser.addScriptValue(new ScriptValue("ROOM_ID", ID, ValueType.TEXT), page);
+        Context context = Global.templateUtils.getDefaultContext();
+        context.setVariable("roomId", ID);
 
-        this.roomPage = page;
+        String page = Global.templateUtils.engine.process("chat-room", context);
+
 
 
 
@@ -46,7 +44,9 @@ public class Room {
                 logger.info("user connecting: " + visitor.getUsername());
                 for (var user : users) {
                     if(user.account.getAuthToken().equals(visitor.getAuthToken())) {
-                        Utils.sendOutput(exchange, HtmlParser.parseDynamic(roomPage, exchange), false, 200);
+                        Context contextDynamic = new Context();
+                        contextDynamic.setVariable("username", Global.database.getAccountBySession(Utils.getCurrentSession(exchange)).getUsername());
+                        Utils.sendOutput(exchange, Global.templateUtils.engine.process("chat-room", contextDynamic), false, 200);
                     }
                 }
             }
@@ -55,17 +55,18 @@ public class Room {
 
     public Room(String ID, boolean isPublic) {
         this.ID = ID;
-        String page = Utils.getFile("html/room.html");
-        page = HtmlParser.parseStatic(page);
-        page = HtmlParser.addScriptValue(new ScriptValue("ROOM_ID", ID, ValueType.TEXT), page);
+        Context contextStatic = Global.templateUtils.getDefaultContext();
+        contextStatic.setVariable("roomId", ID);
 
-        this.roomPage = page;
+        String page = Global.templateUtils.engine.process("chat-room", contextStatic);
 
         Global.httpService.httpServer.createContext("/chat/" + ID, (HttpExchange exchange) -> {
             Account visitor = Global.database.getAccountBySession(Utils.getCurrentSession(exchange));
 
             if(visitor != null) {
-                Utils.sendOutput(exchange, HtmlParser.parseDynamic(roomPage, exchange), false, 200);
+                Context contextDynamic = new Context();
+                contextDynamic.setVariable("username", Global.database.getAccountBySession(Utils.getCurrentSession(exchange)).getUsername());
+                Utils.sendOutput(exchange, Global.templateUtils.engine.process("chat-room", contextDynamic), false, 200);
             }
         });
     }
