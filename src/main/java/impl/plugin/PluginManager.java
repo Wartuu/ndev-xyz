@@ -6,6 +6,7 @@ import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
+import org.graalvm.polyglot.Language;
 import org.graalvm.polyglot.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,8 +45,6 @@ public class PluginManager {
             this.logFile = new FileHandler(config.getGraalvmLogFile());
         } catch (Exception e) {logger.error(e.getMessage());}
 
-
-
         this.engine = Context.newBuilder("js")
                 .allowHostAccess(HostAccess.ALL)
                 .allowHostClassLookup(className -> true)
@@ -54,6 +53,14 @@ public class PluginManager {
 
         this.bindings = engine.getBindings("js");
         this.bindings.putMember("NotesBin", Global.notesBin);
+        this.bindings.putMember("$", new PluginFunctions(this));
+        this.engine.eval("js", "const utils = Java.type('impl.utils.Utils')");
+
+
+        for (var plugin : pluginList) {
+            logger.info("adding plugin: " + plugin.getPluginName());
+            engine.eval("js", plugin.getPluginScript());
+        }
     }
 
 
