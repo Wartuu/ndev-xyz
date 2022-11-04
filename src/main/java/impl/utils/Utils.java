@@ -3,6 +3,11 @@ package impl.utils;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.oned.EAN13Writer;
+import com.google.zxing.qrcode.QRCodeWriter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import impl.database.Account;
@@ -17,6 +22,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -25,6 +34,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -414,14 +424,14 @@ public class Utils {
     public static void loadStaticHandlers(HttpServer httpServer) {
 
         for (String file : Utils.getStaticFiles()) {
-            String ext = file.substring(file.lastIndexOf('.'));
+            String ext = file.substring(file.lastIndexOf('.')).replace(".", "");
             boolean isAdminOnly = file.toLowerCase(Locale.ROOT).contains("admin");
             String path = "/static/" +ext+"/"+file;
             String content = Utils.getFile("static/" + file);
             byte[] compressed = Gzip.createGzip(Utils.getFile("static/" + file));
             String mimeType = getMimeMap().get(ext);
 
-            logger.info(file + ": uncompressed: " + content.getBytes(StandardCharsets.UTF_8).length + ", compressed: " + compressed.length);
+            logger.info(path + ": uncompressed: " + content.getBytes(StandardCharsets.UTF_8).length + ", compressed: " + compressed.length);
 
             if(content.getBytes().length > compressed.length) {
                 logger.info("using compression for: " + file);
@@ -489,6 +499,23 @@ public class Utils {
             }
         }
     }
+
+    public static String generateQrCodeToBase64(String qrText) {
+        try {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            QRCodeWriter qrCodeWriter = new QRCodeWriter();
+            BitMatrix matrix = qrCodeWriter.encode(qrText, BarcodeFormat.QR_CODE, 250, 250);
+
+            ImageIO.write(MatrixToImageWriter.toBufferedImage(matrix), "png", byteArrayOutputStream);
+
+            return Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return null;
+        }
+
+    }
+
 
     public static HashMap<String,String> getMimeMap() {
         HashMap<String, String> mimes = new HashMap<>();

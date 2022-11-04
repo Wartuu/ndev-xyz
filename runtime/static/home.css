@@ -1,0 +1,28 @@
+:root {
+    --navbar-button-size-y: 75px;
+    --navbar-button-size-x: 100px;
+
+    --spacing-x: 25px;
+}
+
+
+#navbar-container { 
+    height: var(--navbar-button-size-y);
+    width: 100%;
+    background-color:#202020;  
+}
+
+#navbar-buttons {
+    float:right;
+    height: var(--navbar-button-size-y);
+}
+
+.navbar-btn {
+    text-align: center;
+
+    background-color: #404040;
+    height: var(--navbar-button-size-y);
+    width: var(--navbar-button-size-x);
+
+    
+}

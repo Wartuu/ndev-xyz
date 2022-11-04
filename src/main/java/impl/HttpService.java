@@ -5,6 +5,7 @@ import impl.handler.api.v1.*;
 import impl.handler.support.Favicon;
 import impl.handler.support.Robots;
 import impl.handler.user.Home;
+import impl.handler.user.NoteSuccess;
 import impl.json.ConfigJson;
 import impl.json.VersionJson;
 import impl.database.Database;
@@ -90,11 +91,12 @@ public class HttpService {
             httpServer.createContext("/api/v1/logout", new Logout());
 
             // user uri
-            httpServer.createContext("/", new Home("html/home.html"));
+            httpServer.createContext("/", new Home("home"));
+            httpServer.createContext("/qr", new NoteSuccess("note-created-info"));
 
             // support
             httpServer.createContext("/robots.txt", new Robots(robotsContent));
-            httpServer.createContext("/favicon.ico", new Favicon(faviconContent)).getAuthenticator();
+            httpServer.createContext("/favicon.ico", new Favicon(faviconContent));
 
 
             logger.info("loading static uri...");

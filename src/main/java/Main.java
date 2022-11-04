@@ -32,6 +32,7 @@ public class Main {
         }
 
 
+        Utils.generateQrCodeToBase64("nekodev.xyz");
 
         long startTime = System.nanoTime();
         logger.info("loading config...");

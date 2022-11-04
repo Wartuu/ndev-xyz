@@ -11,10 +11,8 @@ import java.util.ArrayList;
 public class Home implements HttpHandler {
 
     private final String content;
-    public Home(String path) {
-        String file = Utils.getFile(path);
-
-        this.content = Global.templateUtils.processDefault("home");
+    public Home(String template) {
+        this.content = Global.templateUtils.processDefault(template);
     }
 
     @Override

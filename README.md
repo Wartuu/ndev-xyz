@@ -12,6 +12,7 @@
 * java-websocket     - Licensed under [MIT License](https://github.com/TooTallNate/Java-WebSocket/blob/master/LICENSE)
 * jdbc-postgresql    - Licensed under [BSD 2-Clause License](https://jdbc.postgresql.org/license/)
 * dropwizard-metrics - Licensed under [Apache License 2.0](https://github.com/dropwizard/metrics/blob/release/4.2.x/LICENSE)
+* zxing-core         - Licensed under [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0.txt) 
 
 ### ImShare (Frontend) is using:
 - based vanilla html
