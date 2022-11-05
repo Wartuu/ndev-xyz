@@ -76,6 +76,31 @@ public class CreateNote implements HttpHandler {
 
         String name = UUID.randomUUID().toString();
 
+        while (true) {
+            boolean repeats = false;
+            File directory = new File("notes");
+            File[] noteList = directory.listFiles();
+
+            if(noteList == null) {
+                break;
+            }
+
+            for (File note : noteList) {
+                if(note.isFile()) {
+                    if(note.getName().equals(repeats + ".json")) {
+                        repeats = true;
+                        name = UUID.randomUUID().toString();
+                    }
+                }
+
+            }
+
+            if(!repeats) {
+                break;
+            }
+        }
+
+
         noteConfig.setContentFile(name + ".txt");
 
         File configFile = new File("notes/" + name + ".json");
