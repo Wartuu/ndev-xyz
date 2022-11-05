@@ -2,7 +2,7 @@ package impl.json;
 
 import com.google.gson.annotations.SerializedName;
 
-public class AccountAccessJson {
+public class AccountAuthJson {
     @SerializedName("username")
     private String username;
 

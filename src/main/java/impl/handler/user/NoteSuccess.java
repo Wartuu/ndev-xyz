@@ -18,10 +18,16 @@ public class NoteSuccess implements HttpHandler {
 
     @Override
     public void handle(HttpExchange exchange) throws IOException {
-        String qrThing = Utils.generateQrCodeToBase64(Utils.getQuery(exchange, "text"));
+        String linkQuery = Utils.getQuery(exchange, "link");
+
+        if(linkQuery == null) {
+            Utils.sendOutput(exchange, "error: no given link", false, 200);
+            return;
+        }
 
         Context context = Global.templateUtils.getDefaultContext();
-        context.setVariable("QR", qrThing);
+        context.setVariable("QR", Utils.generateQrCodeToBase64(linkQuery));
+        context.setVariable("link", linkQuery);
 
         Utils.sendOutput(exchange, Global.templateUtils.engine.process(template, context), false, 200);
 

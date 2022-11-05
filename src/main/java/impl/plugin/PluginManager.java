@@ -82,8 +82,15 @@ public class PluginManager {
                     try {
                         hook.getFunction().call();
                     } catch (Exception e) {logger.error(e.getMessage());}
+
                 }
             }
+
+
+            // tick
+            try {
+                Thread.sleep(25);
+            } catch (Exception e) {logger.error(e.getMessage());}
         }
 
 

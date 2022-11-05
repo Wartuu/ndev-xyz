@@ -92,7 +92,7 @@ public class HttpService {
 
             // user uri
             httpServer.createContext("/", new Home("home"));
-            httpServer.createContext("/qr", new NoteSuccess("note-created-info"));
+            httpServer.createContext("/note-success", new NoteSuccess("note-created-info"));
 
             // support
             httpServer.createContext("/robots.txt", new Robots(robotsContent));

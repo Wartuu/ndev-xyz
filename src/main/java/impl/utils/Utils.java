@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.oned.EAN13Writer;
@@ -217,18 +218,22 @@ public class Utils {
     }
 
     public static String getQuery(HttpExchange exchange, String UriName) {
-        String[] query = exchange.getRequestURI().getQuery().split("&");
-        List<String> queryfull = new ArrayList<String>(query.length*2);
-        for (int i = 0; i < query.length;i++) {
-            Collections.addAll(queryfull, query[i].split("="));
-        }
-        for (int i = 0; i < queryfull.size();i++) {
-            if(i % 2 == 0)
-                if(queryfull.get(i).equalsIgnoreCase(UriName))
-                    return queryfull.get(i+1);
+        try {
+            String[] query = exchange.getRequestURI().getQuery().split("&");
+            List<String> queryfull = new ArrayList<String>(query.length*2);
+            for (int i = 0; i < query.length;i++) {
+                Collections.addAll(queryfull, query[i].split("="));
+            }
+            for (int i = 0; i < queryfull.size();i++) {
+                if(i % 2 == 0) {
+                    if(queryfull.get(i).equalsIgnoreCase(UriName))
+                        return queryfull.get(i+1);
+                }
+            }
 
-        }
-        return "NULL";
+
+        } catch (Exception e) {}
+        return null;
     }
 
     public static String getFromJson(String json, String searchedVar) {
@@ -265,6 +270,16 @@ public class Utils {
             logger.error(e.getMessage());
         }
         return out;
+    }
+
+    public static String hmac512(String content) {
+        String out = null;
+
+        try {
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 
     public static byte[] generateSalt() {
@@ -503,8 +518,9 @@ public class Utils {
     public static String generateQrCodeToBase64(String qrText) {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            BitMatrix matrix = qrCodeWriter.encode(qrText, BarcodeFormat.QR_CODE, 250, 250);
+            MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+            BitMatrix matrix = multiFormatWriter.encode(qrText, BarcodeFormat.QR_CODE, 250, 250
+            );
 
             ImageIO.write(MatrixToImageWriter.toBufferedImage(matrix), "png", byteArrayOutputStream);
 
@@ -513,6 +529,10 @@ public class Utils {
             logger.error(e.getMessage());
             return null;
         }
+
+    }
+
+    public void getNote() {
 
     }
 

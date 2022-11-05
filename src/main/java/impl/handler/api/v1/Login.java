@@ -3,7 +3,7 @@ package impl.handler.api.v1;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import impl.database.Account;
-import impl.json.AccountAccessJson;
+import impl.json.AccountAuthJson;
 import impl.json.LoginJson;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
@@ -18,7 +18,7 @@ public class Login implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         if(exchange.getRequestMethod().equalsIgnoreCase("post")) {
 
-            AccountAccessJson accessJson = Global.gson.fromJson(Utils.getFromPost(exchange), AccountAccessJson.class);
+            AccountAuthJson accessJson = Global.gson.fromJson(Utils.getFromPost(exchange), AccountAuthJson.class);
             LoginJson outputJson = new LoginJson();
 
 
@@ -38,7 +38,18 @@ public class Login implements HttpHandler {
 
             String inputHash = Utils.sha512(accessJson.getPassword(), Utils.hexToByte(salt));
 
-            if(hash.equals(inputHash)) {
+            boolean sameHash = true;
+
+            char[] mainHashChars = hash.toCharArray();
+            char[] inputHashChars = inputHash.toCharArray();
+
+            for (int i = 0; i<mainHashChars.length; i++) {
+                if(mainHashChars[i] != inputHashChars[i]) {
+                    sameHash = false;
+                }
+            }
+
+            if(sameHash) {
                 logger.info(userAccount.getUsername() + " logged at ip: " + exchange.getRemoteAddress().getAddress().getHostAddress());
                 Global.database.update("update account " +
                                                 "set last_login = now() " +
@@ -57,8 +68,8 @@ public class Login implements HttpHandler {
                 Utils.sendOutput(exchange, Global.gson.toJson(outputJson), false, 200);
             } else {
 
-                logger.info("illegal character or user does not exist");
-                outputJson.setReason("illegal character or user does not exist");
+                logger.info("wrong password, illegal character or user does not exist");
+                outputJson.setReason("wrong password, illegal character or user does not exist");
                 outputJson.setSuccess(false);
                 Utils.sendOutput(exchange, Global.gson.toJson(outputJson), false, 200);
             }

@@ -25,6 +25,9 @@ public class MailClient {
         mailConfig.setProperty("mail.smtp.starttls.enable", String.valueOf(config.isMailTls()));
         mailConfig.setProperty("mail.smtp.auth", String.valueOf(config.isMailAuth()));
 
+
+
+
         this.mailConfig = mailConfig;
     }
 

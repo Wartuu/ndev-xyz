@@ -23,23 +23,6 @@ public class PluginFunctions {
     public void createHook(String name, Callable hook) {
         this.pluginManager.createHook(name, hook);
     }
-
-    public void createUri(String path, String customHook, Callable function) {
-        Global.httpService.httpServer.createContext(path, (HttpExchange exchange) -> {
-            this.pluginManager.addToEngine("exchange", exchange);
-
-            try {
-                function.call();
-
-                this.pluginManager.triggerHook(customHook);
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-            }
-
-            this.pluginManager.removeFromEngine("exchange");
-        });
-    }
-
     public void createUri(String path, Callable function) {
         Global.httpService.httpServer.createContext(path, (HttpExchange exchange) -> {
             this.pluginManager.addToEngine("exchange", exchange);
@@ -63,8 +46,11 @@ public class PluginFunctions {
     }
 
     public void restartHttpServer() {
+        logger.warn("RESTARTING HTTPSERVER");
+
         Global.httpService.stop();
         Global.httpService = new HttpService(config);
+        Global.httpService.start();
     }
 
     public ConfigJson getConfig() {

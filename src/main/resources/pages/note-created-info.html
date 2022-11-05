@@ -8,7 +8,12 @@
     <title>Document</title>
 </head>
 <body>
-    <img th:src=" 'data:image/png;base64, ' +  ${QR}"/>
+    <img th:src=" 'data:image/png;base64, ' +  ${QR}" style="border-radius: 25px"/>
 
+    <style>
+        body{
+            background-color: #303030;
+        }
+    </style>
 </body>
 </html>
