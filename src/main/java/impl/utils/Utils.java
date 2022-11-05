@@ -7,8 +7,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.oned.EAN13Writer;
-import com.google.zxing.qrcode.QRCodeWriter;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpServer;
 import impl.database.Account;
@@ -19,14 +17,16 @@ import impl.utils.executor.ExecutorThreadFactory;
 import impl.utils.executor.ExecutorThreadPool;
 import impl.utils.finals.Global;
 import impl.utils.gzip.Gzip;
+import kotlin.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
-import javax.imageio.stream.ImageOutputStream;
-import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -34,6 +34,7 @@ import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -272,14 +273,36 @@ public class Utils {
         return out;
     }
 
-    public static String hmac512(String content) {
-        String out = null;
+    public Pair<String, String> encryptAES256(String content, String password) {
+        Pair<String, String> out = null;
 
         try {
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA256");
+
+            byte[] salt = Utils.generateSalt();
+
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, 65536, 256);
+
+            SecretKey key = factory.generateSecret(spec);
+            SecretKey secretKey = new SecretKeySpec(key.getEncoded(), "AES");
+
+
+            String passwordOut = byteToHex(salt) + ":" + password;
+            out = new Pair<>(byteToHex(secretKey.getEncoded()), passwordOut);
 
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
+
+        return out;
+    }
+
+    public String decryptAES256(String content, String password) {
+        String out = null;
+
+
+
+        return out;
     }
 
     public static byte[] generateSalt() {

@@ -1,8 +1,8 @@
-package impl.json;
+package impl.json.account;
 
 import com.google.gson.annotations.SerializedName;
 
-public class AccountAuthJson {
+public class AccountVerificationJson {
     @SerializedName("username")
     private String username;
 

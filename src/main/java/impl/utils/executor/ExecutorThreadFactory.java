@@ -1,8 +1,6 @@
 package impl.utils.executor;
 
-import com.sun.net.httpserver.HttpHandler;
 import impl.json.ConfigJson;
-import impl.utils.finals.Global;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

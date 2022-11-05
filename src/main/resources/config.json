@@ -4,6 +4,9 @@
   "http-port": 7001,
   "ws-port": 7002,
 
+  "add-port-to-redirection": true,
+
+
   "server-domain": "localhost",
 
   "http-executor-worker-priority": 10,

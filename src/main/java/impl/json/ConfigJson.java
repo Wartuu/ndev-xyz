@@ -8,6 +8,9 @@ public class ConfigJson {
     @SerializedName("ws-port")
     private int websocketPort;
 
+    @SerializedName("add-port-to-redirection")
+    private boolean addPortToRedirection;
+
     @SerializedName("http-executor-thread-pool-max-size")
     private int executorOverrunSize;
 
@@ -178,4 +181,7 @@ public class ConfigJson {
         return graalvmLogFile;
     }
 
+    public boolean isAddPortToRedirection() {
+        return addPortToRedirection;
+    }
 }

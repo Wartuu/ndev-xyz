@@ -2,8 +2,8 @@ package impl.handler.api.v1;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import impl.json.AccountAuthJson;
-import impl.json.RegisterJson;
+import impl.json.account.AccountVerificationJson;
+import impl.json.account.RegisterJson;
 import impl.utils.AccountType;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
@@ -19,9 +19,9 @@ public class Register implements HttpHandler {
         if (exchange.getRequestMethod().equalsIgnoreCase("post")) {
             String json = Utils.getFromPost(exchange);
             logger.debug(json);
-            AccountAuthJson accessJson;
+            AccountVerificationJson accessJson;
             try {
-                accessJson = Global.gson.fromJson(json, AccountAuthJson.class);
+                accessJson = Global.gson.fromJson(json, AccountVerificationJson.class);
             } catch (Exception e) {
                 RegisterJson registerJson = new RegisterJson();
                 registerJson.setReason("wrong json");

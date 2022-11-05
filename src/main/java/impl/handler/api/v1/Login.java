@@ -3,8 +3,8 @@ package impl.handler.api.v1;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import impl.database.Account;
-import impl.json.AccountAuthJson;
-import impl.json.LoginJson;
+import impl.json.account.AccountVerificationJson;
+import impl.json.account.LoginStatusJson;
 import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.slf4j.Logger;
@@ -18,8 +18,8 @@ public class Login implements HttpHandler {
     public void handle(HttpExchange exchange) throws IOException {
         if(exchange.getRequestMethod().equalsIgnoreCase("post")) {
 
-            AccountAuthJson accessJson = Global.gson.fromJson(Utils.getFromPost(exchange), AccountAuthJson.class);
-            LoginJson outputJson = new LoginJson();
+            AccountVerificationJson accessJson = Global.gson.fromJson(Utils.getFromPost(exchange), AccountVerificationJson.class);
+            LoginStatusJson outputJson = new LoginStatusJson();
 
 
 
@@ -52,8 +52,8 @@ public class Login implements HttpHandler {
             if(sameHash) {
                 logger.info(userAccount.getUsername() + " logged at ip: " + exchange.getRemoteAddress().getAddress().getHostAddress());
                 Global.database.update("update account " +
-                                                "set last_login = now() " +
-                                                "where id=" + userAccount.getId() );
+                        "set last_login = now() " +
+                        "where id=" + userAccount.getId() );
                 Global.database.update("update account " +
                         "set last_ip = '" + exchange.getRemoteAddress().getAddress().getHostAddress() + "' " +
                         "where id=" + userAccount.getId() );

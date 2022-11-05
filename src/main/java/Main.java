@@ -8,10 +8,7 @@ import impl.utils.Utils;
 import impl.utils.finals.Global;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.thymeleaf.Thymeleaf;
 
-import java.io.File;
-import java.io.PrintStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
@@ -30,9 +27,6 @@ public class Main {
                 Thread.sleep(10000/3);
             }
         }
-
-
-        Utils.generateQrCodeToBase64("nekodev.xyz");
 
         long startTime = System.nanoTime();
         logger.info("loading config...");

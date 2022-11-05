@@ -2,9 +2,7 @@ package impl;
 
 import com.google.gson.JsonObject;
 import impl.database.Account;
-import impl.database.Database;
 import impl.json.ConfigJson;
-import impl.utils.Utils;
 import impl.utils.finals.Global;
 import impl.utils.irc.Room;
 import impl.utils.irc.User;
@@ -14,11 +12,9 @@ import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.crypto.Data;
 import java.net.HttpCookie;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.rmi.server.UID;
 import java.util.*;
 
 public class WebsocketService extends WebSocketServer {

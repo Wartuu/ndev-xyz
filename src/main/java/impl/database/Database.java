@@ -1,12 +1,11 @@
 package impl.database;
 import com.sun.net.httpserver.HttpExchange;
 import impl.json.ConfigJson;
-import impl.json.RegisterJson;
+import impl.json.account.RegisterJson;
 import impl.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.Properties;
 import java.util.Random;

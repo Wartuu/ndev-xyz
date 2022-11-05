@@ -1,7 +1,6 @@
 package impl.utils.template;
 
 import impl.json.ConfigJson;
-import impl.utils.Hardware;
 import impl.utils.finals.Global;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;

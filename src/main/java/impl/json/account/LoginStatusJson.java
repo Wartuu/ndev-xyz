@@ -1,13 +1,16 @@
-package impl.json;
+package impl.json.account;
 
 import com.google.gson.annotations.SerializedName;
 
-public class LogoutJson {
+public class LoginStatusJson {
     @SerializedName("success")
     private boolean success;
 
     @SerializedName("reason")
     private String reason;
+
+    @SerializedName("session")
+    private String session;
 
     public boolean isSuccess() {
         return success;
@@ -23,5 +26,13 @@ public class LogoutJson {
 
     public void setReason(String reason) {
         this.reason = reason;
+    }
+
+    public String getSession() {
+        return session;
+    }
+
+    public void setSession(String session) {
+        this.session = session;
     }
 }

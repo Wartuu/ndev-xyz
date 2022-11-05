@@ -1,16 +1,18 @@
-package impl.json;
+package impl.json.note;
 
 import com.google.gson.annotations.SerializedName;
 
-public class LoginJson {
+public class NoteResponseJson {
     @SerializedName("success")
     private boolean success;
 
     @SerializedName("reason")
     private String reason;
 
-    @SerializedName("session")
-    private String session;
+    @SerializedName("redirect")
+    private String redirect;
+
+
 
     public boolean isSuccess() {
         return success;
@@ -28,11 +30,12 @@ public class LoginJson {
         this.reason = reason;
     }
 
-    public String getSession() {
-        return session;
+    public String getRedirect() {
+        return redirect;
     }
 
-    public void setSession(String session) {
-        this.session = session;
+    public void setRedirect(String redirect) {
+        this.redirect = redirect;
     }
+
 }
