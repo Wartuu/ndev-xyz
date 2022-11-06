@@ -86,10 +86,13 @@ public class HttpService {
             httpServer.createContext("/api/v1/register", new Register());
             httpServer.createContext("/api/v1/login", new Login());
             httpServer.createContext("/api/v1/logout", new Logout());
-            httpServer.createContext("/api/v1/create-note", new CreateNote(config));
+            httpServer.createContext("/api/v1/create-note", new CreateNote());
+
+
             // user uri
             httpServer.createContext("/", new Home("home"));
-            httpServer.createContext("/note-success", new NoteSuccess("note-created-info"));
+            httpServer.createContext("/note-success", new NoteSuccess("note-success", config));
+
 
             // support
             httpServer.createContext("/robots.txt", new Robots(robotsContent));

@@ -20,12 +20,6 @@ import java.util.UUID;
 
 public class CreateNote implements HttpHandler {
 
-    private final ConfigJson config;
-
-    public CreateNote(ConfigJson config) {
-        this.config = config;
-    }
-
     @Override
     public void handle(HttpExchange exchange) throws IOException {
 
@@ -117,11 +111,7 @@ public class CreateNote implements HttpHandler {
 
         responseJson.setSuccess(true);
 
-        if(config.isAddPortToRedirection()) {
-            responseJson.setRedirect("/note-success?link=http://" + config.getServerDomain() + ":" + config.getHttpPort() + "/note/" + name);
-        } else {
-            responseJson.setRedirect("/note-success?link=http://" + config.getServerDomain() + "/note/" + name);
-        }
+        responseJson.setRedirect("/note-success?note=" + name);
 
         responseJson.setReason("");
         Utils.sendOutput(exchange, Global.gson.toJson(responseJson), false, 200);

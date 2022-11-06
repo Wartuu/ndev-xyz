@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <link rel="stylesheet" type="text/css" href="/static/css/note-success.css">
+    <title th:text="${config.getServerDomain()} + ' - v' + ${config.getMainVersion()}"></title>
+</head>
+<body>
+    <div class="centered" id="main-panel">
+        <img th:src="'data:image/png;base64, ' +  ${QR}" id="image-qr">
+
+        <div th:with="bar=${burnAfterRead}" th:remove="tag">
+            <div id="disclaimer" th:if="${bar} == true">
+                warning: <br>this note has turned on option: burn-after-read. <br>Pressing "view note" will delete it
+            </div>
+        </div>
+
+
+        <a th:href="${link}">
+            <button id="continue">view note</button>
+        </a>
+
+
+    </div>
+</body>
+</html>
+

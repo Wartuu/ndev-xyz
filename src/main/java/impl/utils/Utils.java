@@ -542,7 +542,7 @@ public class Utils {
         try {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-            BitMatrix matrix = multiFormatWriter.encode(qrText, BarcodeFormat.QR_CODE, 250, 250
+            BitMatrix matrix = multiFormatWriter.encode(qrText, BarcodeFormat.QR_CODE, 150, 150
             );
 
             ImageIO.write(MatrixToImageWriter.toBufferedImage(matrix), "png", byteArrayOutputStream);
