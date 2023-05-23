@@ -28,6 +28,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 import java.io.*;
+import java.net.Inet4Address;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -176,8 +177,10 @@ public class Utils {
                 rawConfig.append(line);
             }
 
+            String configContent = rawConfig.toString().replaceAll("PUBLIC_IP", Inet4Address.getLocalHost().getHostAddress());
+
             Gson gson = new Gson();
-            ConfigJson configGson = gson.fromJson(String.valueOf(rawConfig), ConfigJson.class);
+            ConfigJson configGson = gson.fromJson(configContent, ConfigJson.class);
 
             configFileSR.close();
             configFileStream.close();

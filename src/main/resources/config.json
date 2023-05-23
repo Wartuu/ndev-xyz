@@ -7,7 +7,7 @@
   "add-port-to-redirection": true,
 
 
-  "server-domain": "localhost",
+  "server-domain": "PUBLIC_IP",
 
   "http-executor-worker-priority": 10,
   "http-executor-thread-pool-max-size": -1,
