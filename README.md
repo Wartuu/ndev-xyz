@@ -1,4 +1,4 @@
-# ImShare/nekodev.xyz - Java http/websocket server
+# ImShare/ndev.xyz - Java http/websocket server
 # This repository is copy of old ImShare repository (around 100 commits)
 
 ### ImShare (Backend) is using:
